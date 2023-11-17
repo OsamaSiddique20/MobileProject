@@ -1,15 +1,16 @@
 import { StyleSheet, Text, View ,TextInput} from 'react-native'
 import React,{useEffect, useState} from 'react'
 import { Card,Button } from '@rneui/themed';
-import {doc, setDoc,getDocs, collection,deleteDoc, addDoc,docRef,onSnapshot} from "firebase/firestore";
-import { db,auth } from './Config'
+import {doc, setDoc,getDocs, collection,deleteDoc, addDoc,docRef,onSnapshot,getDoc} from "firebase/firestore";
+import { db,auth,storage } from './Config'
 import {AntDesign,MaterialCommunityIcons} from 'react-native-vector-icons'
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {ref, uploadBytesResumable, getDownloadURL, connectStorageEmulator} from 'firebase/storage'
+import * as ImagePicker from 'expo-image-picker';
 
 const AdminScreen = ({navigation}) => {
-    const [id,setID] = useState()
+
     const [name,setName] = useState()
     const [address,setAddress] = useState()
     const [menu,setMenu] = useState()
@@ -18,6 +19,10 @@ const AdminScreen = ({navigation}) => {
     const [add,setAdd] = useState([])
     const [x,setX] = useState(false)
     const [fetchedData,setFetchedData] = useState([])
+    const [image, setImage] = useState('');
+    const [imageUrl,setUrl] = useState()
+    const [fileName,setFileName] = useState()
+    const [tempArray,setTemp] = useState([])
 
     useEffect(()=>
     {
@@ -28,46 +33,81 @@ const AdminScreen = ({navigation}) => {
                     />
                   
                 })
+
         readAll()
 
 },[]
 )
 
 const uploadImage = async () => {
-    const imgRef = ref(storage, fileName)
-    const img = await fetch(image)
-    const bytes = await img.blob()
-    await uploadBytesResumable(imgRef, bytes)
+    try {
+        console.log(tempArray)
+      await Promise.all(
+        tempArray.map(async (element) => {
+          const imgRef = ref(storage, element.ref);
+          const img = await fetch(element.image); 
+          const bytes = await img.blob();
+          await uploadBytesResumable(imgRef, bytes);
 
-await getDownloadURL(imgRef).then((x) => { setUrl(x) })
-.catch((e) => alert(e.message)) 
+          const url = await getDownloadURL(imgRef);
+          console.log("Download URL:", url);
+
+        })
+      );
+      console.log("All images uploaded successfully");
+      setTemp([])
+    } catch (error) {
+      console.error("Error uploading images:", error.message);
+      
     }
-    const set = async() => {
-        let temp = [...add]
-        p = temp.filter((x)=> x.id == id)
-       
-        if (p.length != 0){
-            let menuTemp = p[0]
+  };
   
-            menuTemp.menu.push({menu:menu,price:price})
-            const index = temp.findIndex((item) => item.id === id);
-            temp[index] = menuTemp;
+
+  
+    const pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        });
+        if (!result.canceled) {
+            let temp = result.assets[0].uri
+        setImage(temp);
+        let tempImages = [...tempArray]
+        tempImages.push({ref:name + '-'+menu,image:temp})
+        setTemp(tempImages)
+
+    }
+    
+        };
+    const set = async() => {
+        readAll()
+        let temp = fetchedData
+        let check = fetchedData.filter((x)=>x.name == name)
+
+  
+        if (check.length != 0){
+            console.log('In check length',temp)
+            check[0].menu.push({menu:menu,price:price})
+            const index = temp.findIndex((item) => item.name === name);
+            temp[index] = check[0];
             setAdd(temp)
         }else{
-            temp.push({id:id,name:name,address:address,menu:[{menu:menu,price:price}]})
+            temp.push({name:name,address:address,menu:[{menu:menu,price:price}]})
 
             setAdd(temp)
         }
         setMenu('')
         setPrice('')
-   
+        console.log('Main',add)
 
         }
         
     const store = async()=>{
+        uploadImage()
+        console.log('IN STORE',add)
         for (const obj of add) {
             try {
-                const docRef = doc(collection(db, 'restaurants'), obj.name); 
+            
+                const docRef = doc(collection(db, 'project'), obj.name); 
                 await setDoc(docRef, obj);
                 console.log('Document written with ID: ', obj.name);
               } catch (error) {
@@ -78,7 +118,7 @@ await getDownloadURL(imgRef).then((x) => { setUrl(x) })
 
           setMenu('')
           setPrice('')
-          setID('')
+        
           setAddress('')
           setName('')
           setAdd([])
@@ -89,12 +129,15 @@ await getDownloadURL(imgRef).then((x) => { setUrl(x) })
     
     const readAll = async () => {
   
-        const docs = await getDocs(collection(db, "restaurants"));
-        let temp = []
+        const docs = await getDocs(collection(db, "project"));
+        let x = []
         docs.forEach((doc) => {
-            temp.push(doc.data())
+      
+            x.push(doc.data())
+
         })
-        setFetchedData(temp)    
+        console.log('From DB\t',x)
+        setFetchedData(x)    
         }
 
     const addToMenu = ()=>{
@@ -103,7 +146,7 @@ await getDownloadURL(imgRef).then((x) => { setUrl(x) })
 
     const deleteRes = async(x)=>{
         
-        await deleteDoc(doc(db, "restaurants", x))
+        await deleteDoc(doc(db, "project", x))
         .then(() => {
           console.log('Document successfully deleted');
 
@@ -119,17 +162,11 @@ await getDownloadURL(imgRef).then((x) => { setUrl(x) })
   return (
     <View style={styles.container}>
        
-      <Card width={"90%"}>
+      <Card width={"90%"} containerStyle={styles.cardStyle}>
       <Card.Title>ADD RESTURANT</Card.Title>
             <Card.Divider />
             <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-                {/* <TextInput
-                    placeholder='Restaurant Id'
-                    value={id}
-                    style={styles.input}
-                    onChangeText={text => setID(text)}
-                    autoCorrect={false}
-                /> */}
+
                 <TextInput
                     placeholder='Restaurant Name'
                     value={name}
@@ -165,18 +202,23 @@ await getDownloadURL(imgRef).then((x) => { setUrl(x) })
                     style={styles.input}
                     autoCorrect={false}
                 />
-                    <Button title="Pick an image from camera roll" onPress={pickImage} />
+                    <Button title="Menu image" onPress={pickImage} 
+                    style={{ backgroundColor: 'red', width: 130 }}
+                    
+                    />
 
                 </View>
                 <View>
                     <TextInput
                     placeholder='Item Description'
-                    value={price}
+                    value={desc}
                     onChangeText={text => setDesc(text)}
                     style={styles.input}
                     autoCorrect={false}
                 />
-                <Button title="Add" buttonStyle={{ backgroundColor: 'red' }} onPress={set}/>
+                <Button title="Add" buttonStyle={{ backgroundColor: 'red' }} onPress={set}
+                style={{ backgroundColor: 'blue', width: 130 }}
+                />
                 </View>
             </View>
             <Text />
@@ -191,10 +233,10 @@ await getDownloadURL(imgRef).then((x) => { setUrl(x) })
                         return(
                             <View key = {i}>
                                 <View style={{flexDirection:'row', justifyContent:'space-around'}} >
-                                    <TouchableOpacity onPress={()=> navigation.navigate("Menu",{name:x.name,menu:x.menu})}>
+                                    <TouchableOpacity onPress={()=> navigation.navigate("ResturantScreen",{name:x.name,menu:x.menu})}>
                                     <Text style={[styles.out,{width:150}]}>{x.name}</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity onPress={()=> navigation.navigate("Menu",{name:x.name,menu:x.menu})}>
+                                    <TouchableOpacity onPress={()=> navigation.navigate("ResturantScreen",{name:x.name,menu:x.menu})}>
                                     <Text style={[styles.out,{width:150}]}>{x.address}</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity onPress={()=> deleteRes(x.name)}>
@@ -223,7 +265,7 @@ export default AdminScreen
 
 const styles = StyleSheet.create({
     container:{
-      //  justifyContent:'space-around',
+
         alignItems:'center',
         flex:1
     },
@@ -239,5 +281,11 @@ const styles = StyleSheet.create({
         shadowRadius:6,
         shadowOpacity:10,
         width:120
+    },
+    cardStyle:{
+        shadowColor: 'rgba(0,0,0, .2)',
+        shadowOffset: { height: 0, width: 0 },
+        shadowOpacity: 0,
+        shadowRadius: 0
     }
 })
