@@ -8,6 +8,9 @@ import Settings from './components/Settings';
 import LoginScreen from './components/LoginScreen';
 import AdminScreen from './components/AdminScreen';
 import ResturantScreen from './components/ResturantScreen';
+import HomeScreen from './components/HomeScreen';
+import MenuScreen from './components/MenuScreen';
+
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 const HomeStack = () => (
@@ -15,13 +18,21 @@ const HomeStack = () => (
     <Stack.Screen name="AdminScreen" component={AdminScreen} />
     <Stack.Screen name="ResturantScreen" component={ResturantScreen} />
   </Stack.Navigator>
-);
+)
+
+const RestTocart = () => (
+  <Stack.Navigator>
+    <Stack.Screen name="HomeScreen" component={HomeScreen} />
+    <Stack.Screen name="MenuScreen" component={MenuScreen} />
+  </Stack.Navigator>
+)
+
 export default function App() {
   return (
     <NavigationContainer>
       <Tab.Navigator>
         <Tab.Screen name="Home" component={Home} />
-        <Tab.Screen name="Settings" component={Settings} />
+        <Tab.Screen name="HomeScreen" component={RestTocart} />
         <Tab.Screen name="Login" component={LoginScreen} />
         <Tab.Screen name="AdminScreenTab" component={HomeStack} />
   

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View ,TextInput} from 'react-native'
+import { StyleSheet, Text, View ,TextInput,Image} from 'react-native'
 import React,{useEffect, useState} from 'react'
 import { Card,Button } from '@rneui/themed';
 import {doc, setDoc,getDocs, collection,deleteDoc, addDoc,docRef,onSnapshot,getDoc} from "firebase/firestore";
@@ -6,7 +6,7 @@ import { db,auth,storage } from './Config'
 import {AntDesign,MaterialCommunityIcons} from 'react-native-vector-icons'
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {ref, uploadBytesResumable, getDownloadURL, connectStorageEmulator} from 'firebase/storage'
+import {ref, uploadBytesResumable, getDownloadURL, connectStorageEmulator,listAll} from 'firebase/storage'
 import * as ImagePicker from 'expo-image-picker';
 
 const AdminScreen = ({navigation}) => {
@@ -20,10 +20,11 @@ const AdminScreen = ({navigation}) => {
     const [x,setX] = useState(false)
     const [fetchedData,setFetchedData] = useState([])
     const [image, setImage] = useState('');
-    const [imageUrl,setUrl] = useState()
+    const [imageUrl,setUrl] = useState([])
     const [fileName,setFileName] = useState()
     const [tempArray,setTemp] = useState([])
-
+    const [profImage,setProfImage] = useState()
+    const [profRef,setProfRef] = useState()
     useEffect(()=>
     {
         navigation.setOptions(
@@ -31,13 +32,60 @@ const AdminScreen = ({navigation}) => {
                 headerLeft: () => <AntDesign name='logout'
                     size={20} onPress={() => navigation.replace("Login")}
                     />
-                  
-                })
+            })
 
-        readAll()
+            const collectionRef = collection(db, 'project')
 
+            const unsubscribe = onSnapshot(collectionRef, (snapshot) => {
+                const newData = snapshot.docs.map((doc) => doc.data());
+                console.log('From DB\t', newData);
+                setFetchedData(newData);
+            });     
+            
+            const storageRef = ref(storage, 'gs://test-3df00.appspot.com');
+
+            listAll(storageRef)
+              .then((result) => {
+                const uniqueUrls = new Set(imageUrl); // Use a Set to store unique URLs
+            
+                result.items.forEach((itemRef) => {
+                  let x = ref(storage, itemRef.name);
+            
+                  getDownloadURL(x)
+                    .then((url) => {
+                      console.log(url);
+
+                      uniqueUrls.add(url);
+
+                      setUrl([...uniqueUrls]);
+                    })
+                    .catch((error) => {
+                      console.error('Error getting image URL:', error);
+                    });
+                });
+              })
+              .catch((error) => {
+                console.error('Error listing images:', error);
+              });
+            
+            return () => {
+                unsubscribe();
+            }
 },[]
 )
+
+const uploadProfImage = async () => {
+    try {
+
+          const imgRef = ref(storage, profRef);
+          const img = await fetch(profImage); 
+          const bytes = await img.blob();
+          await uploadBytesResumable(imgRef, bytes);
+    } catch (error) {
+      console.error("Error uploading images:", error.message);
+      
+    }
+  };
 
 const uploadImage = async () => {
     try {
@@ -53,17 +101,14 @@ const uploadImage = async () => {
           console.log("Download URL:", url);
 
         })
-      );
+      )
       console.log("All images uploaded successfully");
       setTemp([])
     } catch (error) {
       console.error("Error uploading images:", error.message);
       
     }
-  };
-  
-
-  
+  }
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -76,37 +121,58 @@ const uploadImage = async () => {
         setTemp(tempImages)
 
     }
-    
-        };
-    const set = async() => {
-        readAll()
-        let temp = fetchedData
-        let check = fetchedData.filter((x)=>x.name == name)
+        }
 
+    const pickProfImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        });
+        if (!result.canceled) {
+            let temp = result.assets[0].uri
+        setProfImage(temp);
+        setProfRef(name+'-pfp')
+    }
+        }
+    const set = async() => {
+
+        let temp = fetchedData
+        let check = temp.filter((x)=>x.name == name)
+        console.log('In set function: ',check)
   
         if (check.length != 0){
-            console.log('In check length',temp)
-            check[0].menu.push({menu:menu,price:price})
+            
+            check[0].menu.push({menu:menu,price:price,desc:desc})
+            
             const index = temp.findIndex((item) => item.name === name);
             temp[index] = check[0];
+            console.log('TEST::::',temp[index].menu,'->',temp[index])
             setAdd(temp)
         }else{
-            temp.push({name:name,address:address,menu:[{menu:menu,price:price}]})
+            temp.push({name:name,address:address,menu:[{menu:menu,price:price,desc:desc}]})
 
             setAdd(temp)
         }
         setMenu('')
         setPrice('')
-        console.log('Main',add)
-
+        setDesc('')
         }
         
     const store = async()=>{
         uploadImage()
+        uploadProfImage()
+        let x = ref(storage,profRef)
+                getDownloadURL(x)
+                .then((url) => {
+            
+            console.log('3', url)})  .catch((error) => {
+                uploadProfImage()
+                console.log('Profile Picture Added Sucessfully')
+                });
+
         console.log('IN STORE',add)
         for (const obj of add) {
             try {
-            
+                console.log('Each obj: ',obj)
                 const docRef = doc(collection(db, 'project'), obj.name); 
                 await setDoc(docRef, obj);
                 console.log('Document written with ID: ', obj.name);
@@ -118,27 +184,12 @@ const uploadImage = async () => {
 
           setMenu('')
           setPrice('')
-        
+          setDesc('')
           setAddress('')
           setName('')
           setAdd([])
-          readAll()
+
     }
-
-
-    
-    const readAll = async () => {
-  
-        const docs = await getDocs(collection(db, "project"));
-        let x = []
-        docs.forEach((doc) => {
-      
-            x.push(doc.data())
-
-        })
-        console.log('From DB\t',x)
-        setFetchedData(x)    
-        }
 
     const addToMenu = ()=>{
         
@@ -150,13 +201,11 @@ const uploadImage = async () => {
         .then(() => {
           console.log('Document successfully deleted');
 
-          readAll()
         })
         .catch((error) => {
           console.error('Error deleting document:', error);
         });
         
-
     }
         
   return (
@@ -167,23 +216,26 @@ const uploadImage = async () => {
             <Card.Divider />
             <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
 
-                <TextInput
-                    placeholder='Restaurant Name'
-                    value={name}
-                    style={styles.input}
-                    onChangeText={text => setName(text)}
-                    autoCorrect={false}
-                />
+            <TextInput
+                placeholder='Restaurant Name'
+                value={name}
+                style={styles.input}
+                onChangeText={text => setName(text)}
+                autoCorrect={false}
+            />
+            <Button title="Resturant Image" onPress={pickProfImage} 
+                style={{ backgroundColor: 'red', width: 130 }}       
+            />
             </View>
             <Card.Divider />
             <View>
-                <TextInput
-                    placeholder='Address'
-                    value={address}
-                    style={styles.input}
-                    onChangeText={text => setAddress(text)}
-                    autoCorrect={false}
-                />
+            <TextInput
+                placeholder='Address'
+                value={address}
+                style={styles.input}
+                onChangeText={text => setAddress(text)}
+                autoCorrect={false}
+            />
             </View>
             <Card.Divider />
             <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
@@ -233,7 +285,17 @@ const uploadImage = async () => {
                         return(
                             <View key = {i}>
                                 <View style={{flexDirection:'row', justifyContent:'space-around'}} >
-                                    <TouchableOpacity onPress={()=> navigation.navigate("ResturantScreen",{name:x.name,menu:x.menu})}>
+
+                                {
+                                imageUrl
+                                    .filter((url) => url.includes(x.name+'-pfp'))
+                                    .map((filteredUrl, index) => (
+                                   
+                                    <Image key={index} source={{ uri: filteredUrl }} style={{ width: 50, height: 50 }} />
+                                   
+                                    ))
+                                }
+                                <TouchableOpacity onPress={()=> navigation.navigate("ResturantScreen",{name:x.name,menu:x.menu})}>
                                     <Text style={[styles.out,{width:150}]}>{x.name}</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity onPress={()=> navigation.navigate("ResturantScreen",{name:x.name,menu:x.menu})}>
