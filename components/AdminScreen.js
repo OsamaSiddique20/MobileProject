@@ -53,7 +53,6 @@ const AdminScreen = ({navigation}) => {
             
                   getDownloadURL(x)
                     .then((url) => {
-                      console.log(url);
 
                       uniqueUrls.add(url);
 
