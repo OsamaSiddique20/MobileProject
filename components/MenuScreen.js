@@ -11,6 +11,8 @@ import * as ImagePicker from 'expo-image-picker';
 const MenuScreen = ({route,navigation}) => {
     const [fetchedData,setFetchedData] = useState([])
     const [imageUrl,setUrl] = useState([])
+    const { menus, freeDelivery, resName } = route.params;
+    console.log("PARAMS: ",route.params)
     useEffect(()=>
     {
             const collectionRef = collection(db, 'project')
@@ -31,6 +33,7 @@ const MenuScreen = ({route,navigation}) => {
             
                   getDownloadURL(x)
                     .then((url) => {
+              
                       uniqueUrls.add(url);
 
                       setUrl([...uniqueUrls]);
@@ -61,40 +64,43 @@ const chunkArray = (array, size) => {
   }
 
 
-  const limitedData = chunkArray(route.params.menu, 2)
+  const limitedData = chunkArray(menus, 2)
 
-  const renderItem = ({ item: row, index: rowIndex }) => (
-    <View style={{ flexDirection: 'row', justifyContent: 'space-between'}}>
-      <Text>{row.price}</Text>
-      <FlatList
-        data={row}
-        keyExtractor={(item, colIndex) => colIndex.toString()}
-        numColumns={2} 
-        renderItem={({ item: data, index: colIndex }) => (
-          <Card containerStyle={{ borderRadius: 10, overflow: 'hidden', width: '40%' }}>
-              <View style={{ padding: 10 }}>
-              <TouchableOpacity onPress={() => navigation.navigate("MenuScreen", { name: data.name, menu: data.menu })}>
-                <Text style={{ fontSize: 18, fontWeight: 'bold', textAlign: 'center' }}>
-                  {data.name}
-                </Text>
-                </TouchableOpacity>
-              </View>
 
-          </Card>
-        )}
-      />
-    </View>
-  );
+  console.log(limitedData)
   return (
     <View>
-        {/* <Text>{route.params.menu[0].price}</Text> */}
+<ScrollView>
 
-
-     <FlatList
-      data={limitedData}
-      keyExtractor={(item, index) => index.toString()}
-      renderItem={renderItem}
-    />
+{limitedData.map((row, rowIndex) => (
+        <View key={rowIndex} style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
+          {row.map((data, colIndex) => (
+            
+            <Card key={colIndex} containerStyle={{ borderRadius: 10, overflow: 'hidden', width: '40%' }}>
+              {imageUrl
+                .filter((url) => url.includes(resName + '-menu-'+data.menu))
+                .map((filteredUrl, imageIndex) => (
+                  <TouchableOpacity  onPress={()=> navigation.navigate("MenuDetails",{name:resName,menuDetails:data,freeDelivery:freeDelivery})}>
+                  <Image
+                    key={imageIndex}
+                    source={{ uri: filteredUrl }}
+                    style={{ width: 120, height: 100 }}
+                  />
+                  </TouchableOpacity>
+                ))}
+              
+              <TouchableOpacity  onPress={()=> navigation.navigate("MenuDetails",{name:resName,menuDetails:data,freeDelivery:freeDelivery})}>
+                <View style={{ padding: 10 }}>
+                  <Text style={{ fontSize: 18, fontWeight: 'bold', textAlign: 'center' }}>
+                    {data.menu}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </Card>
+          ))}
+        </View>
+      ))}
+      </ScrollView>
  
     </View>
   )

@@ -57,7 +57,7 @@ const HomeScreen = ({route,navigation}) => {
 
           listAll(storageRef)
             .then((result) => {
-              const uniqueUrls = new Set(imageUrl); // Use a Set to store unique URLs
+              const uniqueUrls = new Set(imageUrl); 
           
               result.items.forEach((itemRef) => {
                 let x = ref(storage, itemRef.name);
@@ -66,7 +66,6 @@ const HomeScreen = ({route,navigation}) => {
                   .then((url) => {
                     uniqueUrls.add(url);
           
-                    // Convert the Set back to an array and update the state
                     setUrl([...uniqueUrls]);
                   })
                   .catch((error) => {
@@ -141,7 +140,7 @@ const HomeScreen = ({route,navigation}) => {
               {imageUrl
                 .filter((url) => url.includes(data.name + '-pfp'))
                 .map((filteredUrl, imageIndex) => (
-                  <TouchableOpacity  onPress={()=> navigation.navigate("MenuScreen",{name:data.name,menu:data.menu})}>
+                  <TouchableOpacity   onPress={() => navigation.navigate("MenuScreen", {menus: data.menu,freeDelivery: data['Free Delivery'],resName: data.name})}>
                   <Image
                     key={imageIndex}
                     source={{ uri: filteredUrl }}
@@ -149,9 +148,9 @@ const HomeScreen = ({route,navigation}) => {
                   />
                   </TouchableOpacity>
                 ))}
-                <TouchableOpacity onPress={()=> navigation.navigate("MenuScreen",{name:data.name,menu:data.menu})}>
-                <View style={{ padding: 10 }}>
-                  <Text style={{ fontSize: 18, fontWeight: 'bold', textAlign: 'center' }}>
+                <TouchableOpacity   onPress={() => navigation.navigate("MenuScreen", {menus: data.menu,freeDelivery: data['Free Delivery'],resName: data.name})}>
+                <View style={{ padding: 10 }} key={data.name}>
+                  <Text key={data.name} style={{ fontSize: 18, fontWeight: 'bold', textAlign: 'center' }}>
                     {data.name}
                   </Text>
                 </View>
