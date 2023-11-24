@@ -16,35 +16,20 @@ const MenuDetails = ({route,navigation}) => {
     const { name, menuDetails, freeDelivery } = route.params;
     const [selectedSize,setSelectedSize] = useState('M')
     const [newPrice,setNewPrice] = useState(menuDetails.price)
-    useEffect(()=>
-    {
-            const storageRef = ref(storage, 'gs://test-3df00.appspot.com')
+    const [user,setUser] = useState(null)
 
-            listAll(storageRef)
-              .then((result) => {
-                const uniqueUrls = new Set(imageUrl)
-            
-                result.items.forEach((itemRef) => {
-                  let x = ref(storage, itemRef.name);
-            
-                  getDownloadURL(x)
-                    .then((url) => {
-              
-                      uniqueUrls.add(url);
-
-                      setUrl([...uniqueUrls]);
-                    })
-                    .catch((error) => {
-                      console.error('Error getting image URL:', error)
-                    })
-                })
-              })
-              .catch((error) => {
-                console.error('Error listing images:', error)
-              })
-            
-
-},[])
+    useEffect(() => {
+      const userCollection = collection(db, 'user');
+  
+      const unsubscribe = onSnapshot(userCollection, (snapshot) => {
+        const userData = snapshot.docs.map((doc) => doc.data());
+        console.log('USERDATA: ', userData[0].name);
+        setUser(userData[0].name);
+      });
+      return () => {
+        unsubscribe(); 
+      };
+    }, []);
 
 useEffect(() => {
   if (selectedSize === 'L') {
@@ -54,24 +39,23 @@ useEffect(() => {
   }else{
     setNewPrice(Number(menuDetails.price));
   }
+
   
 }, [selectedSize, menuDetails.price]);
-        
+
 
 
   return (
     <View>
       <View><Text></Text></View>
         <View style={{justifyContent: 'center', alignItems: 'center'}}>
-        {imageUrl
-            .filter((url) => url.includes(name+ '-menu-'+menuDetails.menu))
-            .map((filteredUrl, imageIndex) => (
+
                 <Image
-                key={imageIndex}
-                source={{ uri: filteredUrl }}
+                key={1}
+                source={{ uri: menuDetails.image }}
                 style={{ width: 300, height: 250 ,borderRadius: 20 }}
                 />
-        ))}
+
         </View>
 
         <View><Text></Text></View>
@@ -128,7 +112,7 @@ useEffect(() => {
       </View>
 
       <View style={styles.rightContainer}>
-        <TouchableOpacity style={styles.buyButton} onPress={()=> navigation.navigate("Cart",{resName:name,item:menuDetails.menu,price:newPrice})}>
+        <TouchableOpacity style={styles.buyButton} onPress={()=> navigation.navigate("Cart",{resName:name,item:menuDetails.menu,price:newPrice,image:menuDetails.image,user:user})}>
           <Text style={styles.buttonText}>Add to cart</Text>
         </TouchableOpacity>
       </View>

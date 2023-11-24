@@ -41,97 +41,17 @@ const AdminScreen = ({navigation}) => {
                 console.log('From DB\t', newData);
                 setFetchedData(newData);
             });     
-            
-            const storageRef = ref(storage, 'gs://test-3df00.appspot.com');
-
-            listAll(storageRef)
-              .then((result) => {
-                const uniqueUrls = new Set(imageUrl); // Use a Set to store unique URLs
-            
-                result.items.forEach((itemRef) => {
-                  let x = ref(storage, itemRef.name);
-            
-                  getDownloadURL(x)
-                    .then((url) => {
-
-                      uniqueUrls.add(url);
-
-                      setUrl([...uniqueUrls]);
-                    })
-                    .catch((error) => {
-                      console.error('Error getting image URL:', error);
-                    });
-                });
-              })
-              .catch((error) => {
-                console.error('Error listing images:', error);
-              });
-            
-            return () => {
+       return () => {
                 unsubscribe();
             }
 },[]
 )
 
-const uploadProfImage = async () => {
-    try {
 
-          const imgRef = ref(storage, profRef);
-          const img = await fetch(profImage); 
-          const bytes = await img.blob();
-          await uploadBytesResumable(imgRef, bytes);
-    } catch (error) {
-      console.error("Error uploading images:", error.message);
-      
-    }
-  };
 
-const uploadImage = async () => {
-    try {
-        console.log(tempArray)
-      await Promise.all(
-        tempArray.map(async (element) => {
-          const imgRef = ref(storage, element.ref);
-          const img = await fetch(element.image); 
-          const bytes = await img.blob();
-          await uploadBytesResumable(imgRef, bytes);
 
-          const url = await getDownloadURL(imgRef);
-          console.log("Download URL:", url);
 
-        })
-      )
-      console.log("All images uploaded successfully");
-      setTemp([])
-    } catch (error) {
-      console.error("Error uploading images:", error.message);
-      
-    }
-  }
-    const pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.All,
-        });
-        if (!result.canceled) {
-            let temp = result.assets[0].uri
-        setImage(temp);
-        let tempImages = [...tempArray]
-        tempImages.push({ref:name + '-'+menu,image:temp})
-        setTemp(tempImages)
 
-    }
-        }
-
-    const pickProfImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.All,
-        });
-        if (!result.canceled) {
-            let temp = result.assets[0].uri
-        setProfImage(temp);
-        setProfRef(name+'-pfp')
-    }
-        }
     const set = async() => {
 
         let temp = fetchedData
@@ -157,16 +77,6 @@ const uploadImage = async () => {
         }
         
     const store = async()=>{
-        uploadImage()
-        uploadProfImage()
-        let x = ref(storage,profRef)
-                getDownloadURL(x)
-                .then((url) => {
-            
-            console.log('3', url)})  .catch((error) => {
-                uploadProfImage()
-                console.log('Profile Picture Added Sucessfully')
-                });
 
         console.log('IN STORE',add)
         for (const obj of add) {
@@ -222,9 +132,6 @@ const uploadImage = async () => {
                 onChangeText={text => setName(text)}
                 autoCorrect={false}
             />
-            <Button title="Resturant Image" onPress={pickProfImage} 
-                style={{ backgroundColor: 'red', width: 130 }}       
-            />
             </View>
             <Card.Divider />
             <View>
@@ -253,10 +160,7 @@ const uploadImage = async () => {
                     style={styles.input}
                     autoCorrect={false}
                 />
-                    <Button title="Menu image" onPress={pickImage} 
-                    style={{ backgroundColor: 'red', width: 130 }}
-                    
-                    />
+
 
                 </View>
                 <View>
@@ -285,15 +189,6 @@ const uploadImage = async () => {
                             <View key = {i}>
                                 <View style={{flexDirection:'row', justifyContent:'space-around'}} >
 
-                                {
-                                imageUrl
-                                    .filter((url) => url.includes(x.name+'-pfp'))
-                                    .map((filteredUrl, index) => (
-                                   
-                                    <Image key={index} source={{ uri: filteredUrl }} style={{ width: 50, height: 50 }} />
-                                   
-                                    ))
-                                }
                                 <TouchableOpacity onPress={()=> navigation.navigate("ResturantScreen",{name:x.name,menu:x.menu})}>
                                     <Text style={[styles.out,{width:150}]}>{x.name}</Text>
                                     </TouchableOpacity>

@@ -22,30 +22,30 @@ const MenuScreen = ({route,navigation}) => {
                 setFetchedData(newData);
             })
             
-            const storageRef = ref(storage, 'gs://test-3df00.appspot.com')
+            // const storageRef = ref(storage, 'gs://test-3df00.appspot.com')
 
-            listAll(storageRef)
-              .then((result) => {
-                const uniqueUrls = new Set(imageUrl)
+            // listAll(storageRef)
+            //   .then((result) => {
+            //     const uniqueUrls = new Set(imageUrl)
             
-                result.items.forEach((itemRef) => {
-                  let x = ref(storage, itemRef.name);
+            //     result.items.forEach((itemRef) => {
+            //       let x = ref(storage, itemRef.name);
             
-                  getDownloadURL(x)
-                    .then((url) => {
+            //       getDownloadURL(x)
+            //         .then((url) => {
               
-                      uniqueUrls.add(url);
+            //           uniqueUrls.add(url);
 
-                      setUrl([...uniqueUrls]);
-                    })
-                    .catch((error) => {
-                      console.error('Error getting image URL:', error)
-                    })
-                })
-              })
-              .catch((error) => {
-                console.error('Error listing images:', error)
-              })
+            //           setUrl([...uniqueUrls]);
+            //         })
+            //         .catch((error) => {
+            //           console.error('Error getting image URL:', error)
+            //         })
+            //     })
+            //   })
+            //   .catch((error) => {
+            //     console.error('Error listing images:', error)
+            //   })
             
             return () => {
                 unsubscribe();
@@ -77,17 +77,15 @@ const chunkArray = (array, size) => {
           {row.map((data, colIndex) => (
             
             <Card key={colIndex} containerStyle={{ borderRadius: 10, overflow: 'hidden', width: '40%' }}>
-              {imageUrl
-                .filter((url) => url.includes(resName + '-menu-'+data.menu))
-                .map((filteredUrl, imageIndex) => (
+
                   <TouchableOpacity  onPress={()=> navigation.navigate("MenuDetails",{name:resName,menuDetails:data,freeDelivery:freeDelivery})}>
                   <Image
-                    key={imageIndex}
-                    source={{ uri: filteredUrl }}
+                    key={colIndex}
+                    source={{ uri: data.image }}
                     style={{ width: 120, height: 100 }}
                   />
                   </TouchableOpacity>
-                ))}
+   
               
               <TouchableOpacity  onPress={()=> navigation.navigate("MenuDetails",{name:resName,menuDetails:data,freeDelivery:freeDelivery})}>
                 <View style={{ padding: 10 }}>
