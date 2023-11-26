@@ -28,10 +28,9 @@ const Cart = ({route,navigation}) => {
     
         const cartSnapshot = await getDoc(userCartRef);
 
-
         await setDoc(
           userCartRef,
-          { [`${restaurantId}-${itemId}`]: { name: itemId, price: price, quantity: 1, image: image,ordered:false } },
+          { [`${restaurantId}-${itemId}`]: { name: itemId, price: price, quantity: 1, image: image,user:user} },
           { merge: true }
         )
       }

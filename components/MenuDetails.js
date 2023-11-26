@@ -19,17 +19,21 @@ const MenuDetails = ({route,navigation}) => {
     const [user,setUser] = useState(null)
 
     useEffect(() => {
-      const userCollection = collection(db, 'user');
+      const userCollection = collection(db, 'user')
   
-      const unsubscribe = onSnapshot(userCollection, (snapshot) => {
+      const unsubscribe1 = onSnapshot(userCollection, (snapshot) => {
         const userData = snapshot.docs.map((doc) => doc.data());
-        console.log('USERDATA: ', userData[0].name);
-        setUser(userData[0].name);
-      });
-      return () => {
-        unsubscribe(); 
-      };
-    }, []);
+        console.log('USERDATA: ', userData);
+        if (userData[0].signedin == true){
+          setUser(userData[0].name);
+        }
+        userData.forEach((x)=>{
+          if (x.signedin == true){
+            setUser(x.name);
+          }
+        })
+      })
+    }, [])
 
 useEffect(() => {
   if (selectedSize === 'L') {

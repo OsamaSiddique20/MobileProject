@@ -13,6 +13,7 @@ import MenuScreen from './components/MenuScreen';
 import MenuDetails from './components/MenuDetails';
 import Cart from './components/Cart';
 import Delivery from './components/Delivery';
+import OrderHistory from './components/OrderHistory';
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 const HomeStack = () => (
@@ -36,9 +37,11 @@ export default function App() {
   return (
     <NavigationContainer>
       <Tab.Navigator>
-        <Tab.Screen name="Home" component={Home} />
+       
         <Tab.Screen name="HomeScreen" component={RestTocart} />
-        <Tab.Screen name="Login" component={LoginScreen} />
+
+        <Tab.Screen name="OrderHistory" component={OrderHistory} />
+
         <Tab.Screen name="AdminScreenTab" component={HomeStack} />
   
       </Tab.Navigator>
