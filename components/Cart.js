@@ -4,7 +4,7 @@ import { Card,Button } from '@rneui/themed';
 
 import {doc, setDoc,getDocs, collection,deleteDoc, addDoc,docRef,onSnapshot,getDoc,query,where} from "firebase/firestore";
 import { db,auth,storage } from './Config'
-import {AntDesign,MaterialCommunityIcons} from 'react-native-vector-icons'
+import {AntDesign,MaterialCommunityIcons,FontAwesome,Ionicons} from 'react-native-vector-icons'
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -18,6 +18,7 @@ const Cart = ({route,navigation}) => {
 
     const [cartFetched, setCartFetched] = useState([]);
     const [groupedCart, setGroupedCart] = useState([]);
+    const [colorToggle,setColorToggle] = useState(true)
  
 
     useEffect(() => {
@@ -111,6 +112,30 @@ const Cart = ({route,navigation}) => {
       setTotalPrice(newTotalPrice);
     }, [cartFetched]);
 
+
+    const checkout = async()=>{
+      let id = Math.random().toString(36).substr(2, 10);
+
+        const cartHisRef = doc(collection(db, 'CartHistory'), `${user}-${id}`);
+        
+
+        for (const obj of groupedCart) {
+          try {
+              await setDoc(cartHisRef, obj,{merge:true});
+              console.log('Document written  ',);
+            } catch (error) {
+              console.error('Error adding document: ', error);
+            }
+        }
+
+        for (const obj of cartFetched){
+   
+          const userCartRef = doc(collection(db, 'Cart'), `${Object.keys(obj)[0]}-${user}`);
+          await deleteDoc(userCartRef);
+        }
+        navigation.navigate('Delivery')
+
+    }
   return (
     <View>
  
@@ -150,16 +175,26 @@ const Cart = ({route,navigation}) => {
       {totalPrice == 0?
         <View style={styles.centeredRowContainer}>
         <Text style={styles.emptyCartMessage}>Your cart is empty</Text>
-        <MaterialCommunityIcons name="cart" size={30} color="#900" />
+        <Ionicons name="sad-outline" size={30} color={"#e28743"} />
+        
       </View>
 
         :
         <View style={styles.rowContainer}>
         <View style={styles.totalPriceContainer}>
-          <Text style={styles.totalPriceText}>{`Total Price: ${totalPrice} QR`}</Text>
+          <Text style={styles.totalPriceText}>{`Total : ${totalPrice} QR`}</Text>
         </View>
-        <TouchableOpacity style={styles.checkoutButton} >
-          <Text style={styles.buttonText}>Checkout</Text>
+        <View style={styles.paymentToggleContainer}>
+          <TouchableOpacity onPress={()=>setColorToggle(true)} style={{ marginRight: 10 }} >
+              <FontAwesome name="credit-card" size={30} color={colorToggle?"#e28743":"black"} />
+          </TouchableOpacity>
+          
+          <TouchableOpacity onPress={()=>setColorToggle(false)} style={{ marginLeft: 10,marginRight:15 }}>
+              <Ionicons name="cash-outline" size={30} color={colorToggle?"black":"#e28743"} />
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity style={styles.checkoutButton} onPress={checkout}>
+          <Text style={styles.buttonText}>Order</Text>
         </TouchableOpacity>
       </View>
       }
@@ -309,8 +344,15 @@ const styles = StyleSheet.create({
       emptyCartMessage: {
         fontSize: 22,
         fontWeight:'bold',
-        color: '#e28743',
-        marginRight: 10, // Add some margin to separate text and icon
+        color: 'black',
+        marginRight: 10, 
       },
 
+      // payment 
+
+      paymentToggleContainer:{
+        flexDirection:'row',
+        alignItems:'space-between',
+        paddingHorizontal: 10, 
+      }
 })

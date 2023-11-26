@@ -12,7 +12,7 @@ import HomeScreen from './components/HomeScreen';
 import MenuScreen from './components/MenuScreen';
 import MenuDetails from './components/MenuDetails';
 import Cart from './components/Cart';
-
+import Delivery from './components/Delivery';
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 const HomeStack = () => (
@@ -28,6 +28,7 @@ const RestTocart = () => (
     <Stack.Screen name="MenuScreen" component={MenuScreen} />
     <Stack.Screen name="MenuDetails" component={MenuDetails} />
     <Stack.Screen name="Cart" component={Cart} />
+    <Stack.Screen name="Delivery" component={Delivery} />
   </Stack.Navigator>
 )
 
