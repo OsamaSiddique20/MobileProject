@@ -37,7 +37,7 @@ const Cart = ({route,navigation}) => {
     
       addItemToCart(user, resName, item, price, image);
       console.log('1st!!!!!');
-    }, []);
+    }, [])
     
     useEffect(() => {
       console.log('2nd !!!!!!')
@@ -175,8 +175,7 @@ const Cart = ({route,navigation}) => {
         <View style={styles.centeredRowContainer}>
         <Text style={styles.emptyCartMessage}>Your cart is empty</Text>
         <Ionicons name="sad-outline" size={30} color={"#e28743"} />
-        
-      </View>
+        </View>
 
         :
         <View style={styles.rowContainer}>
