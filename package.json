@@ -11,7 +11,7 @@
   "dependencies": {
     "@ant-design/icons": "^5.2.6",
     "@react-navigation/bottom-tabs": "^6.5.11",
-    "@react-navigation/drawer": "^6.6.2",
+    "@react-navigation/drawer": "^6.6.6",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/native-stack": "^6.9.12",
     "@rneui/base": "^4.0.0-rc.7",

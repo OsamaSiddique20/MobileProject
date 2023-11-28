@@ -35,6 +35,8 @@ const MenuDetails = ({route,navigation}) => {
       })
     }, [])
 
+
+
 useEffect(() => {
   if (selectedSize === 'L') {
     setNewPrice(Number(menuDetails.price) + 3);

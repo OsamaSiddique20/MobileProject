@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     container: {
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgb(254, 254, 254)',
+       
         padding: 8,
       },
       text:{

@@ -7,8 +7,10 @@ import { db,auth,storage } from './Config'
 const OrderHistory = () => {
   const [user,setUser] = useState(null)
   const [cartHistoryFetched, setCartHistoryFetched] = useState([]);
+
+  const [initialRender, setInitialRender] = useState(true);
   useEffect(() => {
-    const userCollection = collection(db, 'user');
+    const userCollection = collection(db, 'user')
 
     const unsubscribe1 = onSnapshot(userCollection, (snapshot) => {
       const userData = snapshot.docs.map((doc) => doc.data());
@@ -16,6 +18,7 @@ const OrderHistory = () => {
       if (userData[0].signedin == true){
         setUser(userData[0].name);
       }
+
       userData.forEach((x)=>{
         if (x.signedin == true){
           setUser(x.name)
@@ -25,24 +28,28 @@ const OrderHistory = () => {
 
       // cart history fetch
 
-      const collectionRef = collection(db, 'CartHistory');
+      const collectionRef = collection(db, 'CartHistory')
     
       const unsubscribe = onSnapshot(collectionRef, (snapshot) => {
 
         const newData = snapshot.docs.map((doc) => doc.data());
         const filteredData = newData.filter((x) => x[Object.keys(x)[0]][0].user === user);
-   
         setCartHistoryFetched(filteredData);
-        console.log('CART History :', cartHistoryFetched);
-      });
-
+        if (initialRender) {
+          console.log('111')
+          setInitialRender(false);
+        }
+      console.log('CART History :', filteredData);
+      })
+ 
       return () => {
         unsubscribe1();
         unsubscribe(); 
-        
+     
       };
 
-  }, []);
+
+  }, [initialRender]);
   console.log(cartHistoryFetched)
 
   const totalOrderSums = cartHistoryFetched.map(order => {
@@ -53,9 +60,8 @@ const OrderHistory = () => {
       return sum + restaurantTotal;
     }, 0);
     return orderTotal;
-  });
+  })
   
-
 
   const keysArray = cartHistoryFetched.map(item => Object.keys(item));
 
@@ -72,7 +78,7 @@ const OrderHistory = () => {
             ))}
           </View>
         ))}
-        <Text style={styles.orderTotal}>Total Price: {totalOrderSums[index]} QR</Text>
+        <Text style={styles.orderTotal}>Total : {totalOrderSums[index]} QR</Text>
       </View>
     );
   };
@@ -131,29 +137,86 @@ const OrderHistory = () => {
 export default OrderHistory
 
 const styles = StyleSheet.create({
+  // orderContainer: {
+  //   width: '90%',
+  //   marginTop: 15,
+  //   marginBottom: 10,
+  //   padding: 10,
+  //   borderRadius: 30,
+  //   backgroundColor: '#fff3e0',
+    
+  //   shadowColor: '#000',
+  //   shadowOffset: { width: 0, height: 2 },
+  //   shadowOpacity: 0.2,
+  //   shadowRadius: 4,
+  //   alignSelf: 'center', 
+  //   justifyContent: 'center',
+  // },
+  // orderHeading: {
+  //   fontSize: 18,
+  //   fontWeight: 'bold',
+  //   marginBottom: 5,
+  //   textAlign:'center'
+  // },
+  // restaurantContainer: {
+  //   marginBottom: 5,
+  // },
+  // restaurantHeading: {
+  //   fontSize: 16,
+  //   fontWeight: 'bold',
+  //   marginBottom: 5,
+  // },
+  // orderTotal: {
+  //   fontSize: 16,
+  //   fontWeight: 'bold',
+  //   marginTop: 5,
+  //   textAlign:'center'
+  // },
+
   orderContainer: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    width: '90%',
+    marginTop: 15,
+    marginBottom: 10,
+    padding: 15,
+    borderRadius: 20,
+    backgroundColor: '#fff8e5', // Lightened color
+  
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 3, // For Android shadows
+    alignSelf: 'center',
+    justifyContent: 'center',
   },
+  
   orderHeading: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 5,
+    marginBottom: 10,
+    textAlign: 'center',
+    color: '#e28743', // Accent color
   },
+  
   restaurantContainer: {
-    marginBottom: 5,
+    marginBottom: 10,
   },
+  
   restaurantHeading: {
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 5,
+    color: '#e28743', // Accent color
   },
+  
   orderTotal: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginTop: 5,
+    marginTop: 10,
+    textAlign: 'center',
+    color: 'red', // Accent color
   },
+  
   // empty cart message
   centeredRowContainer: {
     marginTop:300,

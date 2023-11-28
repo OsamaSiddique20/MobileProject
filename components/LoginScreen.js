@@ -2,7 +2,7 @@ import { StyleSheet, TextInput, View,TouchableOpacity,Text,KeyboardAvoidingView 
 import React,{useEffect, useState} from 'react';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import {auth} from './Config'
-
+import HomeScreen from './HomeScreen';
 const LoginScreen = ({navigation}) => {
 const [email,setEmail] = useState()
 const [password,setPassword] = useState()
@@ -43,7 +43,7 @@ const handleRegister = () => {
     .then(() => {
     console.log('Logged in')
     setSignedIn(true)
-    navigation.replace('AdminScreen')
+    navigation.navigate('Tabs')
     })
     .catch((error) => {console.log(error.message);
     setSignedIn(false)})
