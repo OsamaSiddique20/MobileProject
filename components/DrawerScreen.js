@@ -7,32 +7,32 @@ import {
 } from "@react-navigation/drawer";
 import { NavigationContainer } from "@react-navigation/native";
 import HomeScreen from "./HomeScreen";
-
+import OrderHistory from "./OrderHistory";
 const Drawer = createDrawerNavigator();
 const Drawers = ({navigation,route}) => {
 
   return (
     <Drawer.Navigator
-      initialRouteName="HomeScreen"
+    initialRouteName="HomeScreen"
+    screenOptions={{
+      drawerPosition: "left",
+      headerLeft: () => <DrawerToggleButton />,
+      headerRight: false,
+    }}
+  >
+    <Drawer.Screen
+      name="HomeScreen"
+      component={HomeScreen}
       screenOptions={{
         drawerPosition: "left",
         headerLeft: () => <DrawerToggleButton />,
         headerRight: false,
       }}
-    >
-      <Drawer.Screen
-        name="HomeScreen"
-        component={HomeScreen}
-        screenOptions={{
-          drawerPosition: "left",
-          headerLeft: () => <DrawerToggleButton />,
-          headerRight: false,
-        }}
-      
-      />
- 
+    
+    />
 
-    </Drawer.Navigator>
+
+  </Drawer.Navigator>
   );
 };
 

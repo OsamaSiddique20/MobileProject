@@ -1,23 +1,55 @@
 import { StyleSheet, TextInput, View,TouchableOpacity,Text,KeyboardAvoidingView } from 'react-native'
 import React,{useEffect, useState} from 'react';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import {auth} from './Config'
+import {doc, setDoc,getDocs, collection,deleteDoc, addDoc,docRef,onSnapshot,getDoc,query,where} from "firebase/firestore";
+import { db,auth,storage } from './Config'
+
 import HomeScreen from './HomeScreen';
 const LoginScreen = ({navigation}) => {
 const [email,setEmail] = useState()
+const [username,setUsername] = useState()
 const [password,setPassword] = useState()
 const [signedIn,setSignedIn] = useState(false)
 const [flag,setFlag] = useState(false)
 const [error,setError] = useState()
 const [confirmPass,setConfirmPass] = useState()
-useEffect(()=> setSignedIn(false),[])
+useEffect(() => {
+    const userCollection = collection(db, 'user');
+  
+    const unsubscribe1 = onSnapshot(userCollection, async (snapshot) => {
+      const userData = snapshot.docs.map((doc) => doc.data());
+  
+      for (const x of userData) {
+        if (x.signedin === true) {
+          const userRef = doc(collection(db, 'user'), x.name);          
+            await setDoc(
+              userRef,
+              { signedin: false },
+              { merge: true }
+            ); 
+        }
+      }
+    });
+
+    // Cleanup function
+    return () => {
+      unsubscribe1();
+    };
+  }, []);
 
 const handleRegister = () => {
         setFlag(true)
 
         if (password == confirmPass){
             createUserWithEmailAndPassword(auth, email, password)
-            .then(() =>{ console.log("registered")
+            .then(async () => {
+                const userRef = doc(collection(db, 'user'), `${username}`);
+                await setDoc(
+                    userRef,
+                    {  name: username,signedin:false} ,
+                    { merge: true }
+                );
+                console.log('Registered')
             setEmail()
             setPassword()
             setEmail('')
@@ -34,16 +66,23 @@ const handleRegister = () => {
 
   }
 
-  const handleLogin = () => {
+   async function handleLogin  ()  {
     setFlag(false)
     setEmail('')
     setPassword('')
     setConfirmPass('')
     signInWithEmailAndPassword(auth, email, password)
-    .then(() => {
+    .then(async () => {
+    const userRef = doc(collection(db, 'user'), `${username}`);
+    await setDoc(
+            userRef,
+            {  name: username,signedin:true} ,
+            { merge: true }
+    );
+    
     console.log('Logged in')
     setSignedIn(true)
-    navigation.navigate('Tabs')
+    navigation.navigate('DrawerStack')
     })
     .catch((error) => {console.log(error.message);
     setSignedIn(false)})
@@ -55,6 +94,13 @@ const handleRegister = () => {
     <KeyboardAvoidingView style={styles.container}>
             <View style={styles.inputContainer}>
                 <Text>{error}</Text>
+                <TextInput
+                    placeholder='Username'
+                    value={username}
+                    onChangeText={text =>  setUsername(text)}
+                    style={styles.input}
+                /> 
+            
                 <TextInput
                     placeholder='Email'
                     value={email}
@@ -68,7 +114,6 @@ const handleRegister = () => {
                     onChangeText={text =>  setPassword(text)}
                     style={styles.input}
                     secureTextEntry
-                    
                 />
                 {flag?<TextInput
                     placeholder='Password'

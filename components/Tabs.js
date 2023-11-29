@@ -5,6 +5,7 @@ import HomeScreen from './HomeScreen';
 import OrderHistory from './OrderHistory';
 import {FontAwesome } from 'react-native-vector-icons'
 import Drawers from './DrawerScreen';
+import AdminScreen from './AdminScreen';
 const Tab = createBottomTabNavigator();
 const Tabs = ({navigation,route}) => {
 
@@ -21,7 +22,13 @@ const Tabs = ({navigation,route}) => {
       tabBarLabel: 'Order History',
       tabBarIcon: ({ color, size }) => (
         <FontAwesome name="user" color={color} size={size} />
-      ),headerTitle:"Order History'"}}/>
+      ),headerTitle:"Order History"}}/>
+
+<Tab.Screen name="AdminScreen" component={AdminScreen} options={{
+      tabBarLabel: 'AdminScreen',
+      tabBarIcon: ({ color, size }) => (
+        <FontAwesome name="user" color={color} size={size} />
+      ),headerTitle:"AdminScreen"}}/>
     </Tab.Navigator>
   )
 }
