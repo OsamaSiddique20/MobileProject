@@ -46,12 +46,6 @@ const AdminScreen = ({navigation}) => {
             }
 },[]
 )
-
-
-
-
-
-
     const set = async() => {
 
         let temp = fetchedData
@@ -160,7 +154,6 @@ const AdminScreen = ({navigation}) => {
                     style={styles.input}
                     autoCorrect={false}
                 />
-
 
                 </View>
                 <View>

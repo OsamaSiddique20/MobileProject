@@ -24,13 +24,13 @@ const Tabs = ({navigation,route}) => {
         <FontAwesome name="user" color={color} size={size} />
       ),headerTitle:"Order History"}}/>
 
-<Tab.Screen name="AdminScreen" component={AdminScreen} options={{
-      tabBarLabel: 'AdminScreen',
-      tabBarIcon: ({ color, size }) => (
-        <FontAwesome name="user" color={color} size={size} />
-      ),headerTitle:"AdminScreen"}}/>
-    </Tab.Navigator>
-  )
+    <Tab.Screen name="AdminScreen" component={AdminScreen} options={{
+          tabBarLabel: 'AdminScreen',
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome name="user" color={color} size={size} />
+          ),headerTitle:"AdminScreen"}}/>
+        </Tab.Navigator>
+      )
 }
 
 export default Tabs

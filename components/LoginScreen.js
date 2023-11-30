@@ -3,6 +3,7 @@ import React,{useEffect, useState} from 'react';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import {doc, setDoc,getDocs, collection,deleteDoc, addDoc,docRef,onSnapshot,getDoc,query,where} from "firebase/firestore";
 import { db,auth,storage } from './Config'
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 import HomeScreen from './HomeScreen';
 const LoginScreen = ({navigation}) => {
@@ -61,9 +62,6 @@ const handleRegister = () => {
         }else{
             alert("Passowrd mismatch")
         }
-    
-
-
   }
 
    async function handleLogin  ()  {
@@ -157,12 +155,12 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     input: {
-        fontSize: 18,
+        fontSize: wp(4),
         backgroundColor: 'white',
         paddingHorizontal: 10,
         paddingVertical: 15,
         borderRadius: 10,
-        marginTop: 5
+        marginTop: wp(3)
     },
     inputContainer: {
         width: '80%'
