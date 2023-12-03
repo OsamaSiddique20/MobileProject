@@ -103,6 +103,18 @@ const TabNavigator = () => (
         headerTitle: "OrderHistory",
       }}
     />
+        <Tab.Screen
+      name="AdminScreen"
+      component={AdminScreen}
+      options={{
+        tabBarLabel: "AdminScreen",
+        headerShown: false,
+        tabBarIcon: ({ color, size }) => (
+          <FontAwesome name="user" color={color} size={size} />
+        ),
+        headerTitle: "OrderHistory",
+      }}
+    />
   </Tab.Navigator>
 );
 const DrawerStack = () => (
@@ -141,7 +153,6 @@ const StackNav = () => (
     </SafeAreaView>
 )
 
-
 export default function App() {
   return (
     <SafeAreaView style={styles.container}>
@@ -153,6 +164,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f2f2f2",
+    backgroundColor: "white",
   },
 });

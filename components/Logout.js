@@ -3,7 +3,12 @@ import { StyleSheet, Text, View } from 'react-native'
 import React,{useEffect, useState} from 'react';
 const Logout = () => {
     useEffect((navigation)=>{
-        navigation.navigate('LoginScreen')
+        
+      auth.signOut();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'LoginScreen' }],
+      });
     })
   return (
     <View>

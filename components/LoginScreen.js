@@ -117,7 +117,7 @@ const handleRegister = () => {
   }
 
    async function handleLogin  ()  {
-    
+    console.log('In Handle login')
     setFlag(false)
 
     signInWithEmailAndPassword(auth, email, password)

@@ -30,7 +30,7 @@ import {
   connectStorageEmulator,
   listAll,
 } from "firebase/storage";
-import { FontAwesome } from "react-native-vector-icons";
+import { FontAwesome ,SimpleLineIcons} from "react-native-vector-icons";
 
 const HomeScreen = ({ route, navigation }) => {
   const [user, setUser] = useState(null);
@@ -144,7 +144,7 @@ const HomeScreen = ({ route, navigation }) => {
         </View>
         <TouchableOpacity onPress={()=>logout()}>
         
-          <Text>User pfp here </Text>
+        <SimpleLineIcons name="logout" color={"black"} size={25} />
       
         </TouchableOpacity>
       </View>
@@ -288,5 +288,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     color: "#333", // Set the text color as needed
+  
   },
 });
