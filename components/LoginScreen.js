@@ -12,35 +12,75 @@ const [username,setUsername] = useState()
 const [password,setPassword] = useState()
 const [signedIn,setSignedIn] = useState(false)
 const [flag,setFlag] = useState(false)
+const [flag2,setFlag2] = useState(false)
 const [error,setError] = useState()
 const [confirmPass,setConfirmPass] = useState()
-useEffect(() => {
-    const userCollection = collection(db, 'user');
+const [reloadX, setReload] = useState()
+// useEffect(() => {
+//     const reload = async () => {
+//       try {
+//         const q = query(collection(db, "reload"), where("reload", "==", false));
+//         const docs = await getDocs(q);
   
-    const unsubscribe1 = onSnapshot(userCollection, async (snapshot) => {
-      const userData = snapshot.docs.map((doc) => doc.data());
+//         docs.forEach((doc) => {
+//           console.log(doc.data());
+//           setReload(doc.data().reload);
+//         });
+//         console.log('XXXXXX', reloadX);
+//       } catch (error) {
+//         console.error("Error in reload:", error);
+//       }
+//     };
   
-      for (const x of userData) {
-        if (x.signedin === true) {
-          const userRef = doc(collection(db, 'user'), x.name);          
-            await setDoc(
-              userRef,
-              { signedin: false },
-              { merge: true }
-            ); 
+//     reload();
+//   }, []);
+
+  useEffect(() => {
+    console.log('In 2nd useEffect',reloadX)
+
+        const userCollection = collection(db, 'user');
+
+        const unsubscribe1 = onSnapshot(userCollection, async (snapshot) => {
+            const q = query(collection(db, "reload"), where("reload", "==", false));
+            const docs = await getDocs(q);
+       
+            docs.forEach((doc) => {
+              console.log('1!!',doc.data().reload);
+              setReload(doc.data().reload)
+              setFlag2(!doc.data().reload)
+            //   if(doc.data().reload == false){
+            //     setFlag2(true)
+            //   }
+
+            })
+            console.log('BEFORE IF',flag2)
+            if (flag2){
+                console.log('INN',flag2)
+                setFlag2(false)
+                
+                const userData = snapshot.docs.map((doc) => doc.data());
+                for (const x of userData) {
+                    if (x.signedin === true) {
+                    const userRef = doc(collection(db, 'user'), x.name);
+                    await setDoc(
+                        userRef,
+                        { signedin: false },
+                        { merge: true }
+                    )
+                    }
+                }
+                console.log('All False');
         }
-      }
-    });
+        });
+        return () => {
+            unsubscribe1();
+          };
+    
 
-    // Cleanup function
-    return () => {
-      unsubscribe1();
-    };
-  }, []);
-
+}, []);
 const handleRegister = () => {
         setFlag(true)
-
+     
         if (password == confirmPass){
             createUserWithEmailAndPassword(auth, email, password)
             .then(async () => {
@@ -65,20 +105,28 @@ const handleRegister = () => {
   }
 
    async function handleLogin  ()  {
+    
     setFlag(false)
-    setEmail('')
-    setPassword('')
-    setConfirmPass('')
+
     signInWithEmailAndPassword(auth, email, password)
     .then(async () => {
     const userRef = doc(collection(db, 'user'), `${username}`);
+    const reloadRef = doc(collection(db, 'reload'), 'reload')
     await setDoc(
             userRef,
             {  name: username,signedin:true} ,
             { merge: true }
-    );
+    )
+    await setDoc(
+        reloadRef,
+        {  reload: true} ,
+        { merge: true }
+    )
     
     console.log('Logged in')
+    setEmail('')
+    setPassword('')
+    setConfirmPass('')
     setSignedIn(true)
     navigation.navigate('DrawerStack')
     })
@@ -157,49 +205,49 @@ const styles = StyleSheet.create({
     input: {
         fontSize: wp(4),
         backgroundColor: 'white',
-        paddingHorizontal: 10,
-        paddingVertical: 15,
-        borderRadius: 10,
+        paddingHorizontal: wp(4),
+        paddingVertical: wp(4),
+        borderRadius: wp(2.5),
         marginTop: wp(3)
     },
     inputContainer: {
-        width: '80%'
+        width: wp(80)
     },
     button: {
-        width: '100%',
+        width: wp(60),
         alignItems: 'center',
         backgroundColor: '#0782F9',
-        borderRadius: 10,
-        padding: 15
+        borderRadius: wp(2.5),
+        padding: wp(4.5),
 
     },
     buttonContainer: {
 
-        width: '60%',
+        width: wp(60),
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 40
+        marginTop: wp(10)
 
     },
     buttonOutLine: {
-        width: '100%',
+        width: wp(60),
         alignItems: 'center',
         backgroundColor: 'white',
-        borderRadius: 10,
-        padding: 15,
-        marginTop: 5,
+        borderRadius: wp(2.5),
+        padding: wp(4.5),
+        marginTop: wp(2),
         borderColor: '#0782F9',
-        borderWidth: 2
+        borderWidth: wp(0.5)
     },
     buttonText: {
         fontWeight: '700',
         color: 'white',
-        fontSize: 16
+        fontSize: wp(4.5)
     },
     buttonOutLineText: {
         fontWeight: '700',
         color: '#0782F9',
-        fontSize: 16
+        fontSize: wp(4.5)
     }
 
 })
