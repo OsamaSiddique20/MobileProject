@@ -72,10 +72,12 @@ const RestTocart = () => (
       options={{ headerShown: false }}
     />
   </Stack.Navigator>
-);
+)
 
 const TabNavigator = () => (
+
   <Tab.Navigator screenOptions={{ tabBarActiveTintColor: "darkblue" }}>
+
     <Tab.Screen
       name="RestTocart"
       component={RestTocart}
@@ -122,13 +124,11 @@ const DrawerStack = () => (
         headerRight: false,
       }}
     />
-    {/* <Drawer.Screen name="LoginScreen" component={LoginScreen} /> */}
+    <Drawer.Screen name="LoginScreen" component={LoginScreen} options={{headerShown:false}}/>
   </Drawer.Navigator>
 );
-
-export default function App() {
-  return (
-    <SafeAreaView style={styles.container}>
+const StackNav = () => (
+  <SafeAreaView style={styles.container}>
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName="LoginScreen"
@@ -139,12 +139,20 @@ export default function App() {
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaView>
+)
+
+
+export default function App() {
+  return (
+    <SafeAreaView style={styles.container}>
+      <StackNav/>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "red",
+    backgroundColor: "#f2f2f2",
   },
 });

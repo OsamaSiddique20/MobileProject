@@ -40,6 +40,30 @@ const HomeScreen = ({ route, navigation }) => {
   const [cat, setCat] = useState("All");
   const [filteredData, setFilteredData] = useState([]);
   const category = ["All", "Free Delivery", "Top Selling"];
+  const logout =  async () => {
+    console.log(112121)
+    const userCollection = collection(db, "user");
+  
+    const unsubscribe1 = onSnapshot(userCollection, async (snapshot) => {
+      const userData = snapshot.docs.map((doc) => doc.data());
+  
+      for (const x of userData) {
+        const userRef = doc(collection(db, 'user'), `${x.name}`);
+        await setDoc(
+          userRef,
+          { name: x.name, signedin: false },
+          { merge: true }
+        )
+      }
+
+      await auth.signOut();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'LoginScreen' }],
+      });
+    }) 
+  }
+
 
   useEffect(() => {
     const updatedFilteredData = fetchedData
@@ -59,7 +83,7 @@ const HomeScreen = ({ route, navigation }) => {
 
       return acc;
     }, []);
-  };
+  }
 
   // Limit to 2 rows
   const limitedData = chunkArray(filteredData, 2);
@@ -85,7 +109,7 @@ const HomeScreen = ({ route, navigation }) => {
     };
   }, []);
   useEffect(() => {
-    const userCollection = collection(db, "user");
+    const userCollection = collection(db, "user")
 
     const unsubscribe1 = onSnapshot(userCollection, (snapshot) => {
       const userData = snapshot.docs.map((doc) => doc.data());
@@ -118,10 +142,10 @@ const HomeScreen = ({ route, navigation }) => {
         <View>
           <Text style={styles.welcomeText}>Welcome {user} 👋</Text>
         </View>
-        <TouchableOpacity onPress={()=>navigation.navigate('LoginScreen')}>
-        <View>
+        <TouchableOpacity onPress={()=>logout()}>
+        
           <Text>User pfp here </Text>
-        </View>
+      
         </TouchableOpacity>
       </View>
 

@@ -16,6 +16,18 @@ const [flag2,setFlag2] = useState(false)
 const [error,setError] = useState()
 const [confirmPass,setConfirmPass] = useState()
 const [reloadX, setReload] = useState()
+
+// useEffect(() => {
+//     // Reset the navigation stack to HomeScreen
+//     const resetNavigationStack = () => {
+//       navigation.reset({
+//         index: 0,
+//         routes: [{ name: 'LoginScreen' }],
+//       });
+//     };
+//       resetNavigationStack();
+
+//   }, [navigation]);
 // useEffect(() => {
 //     const reload = async () => {
 //       try {
@@ -35,49 +47,49 @@ const [reloadX, setReload] = useState()
 //     reload();
 //   }, []);
 
-  useEffect(() => {
-    console.log('In 2nd useEffect',reloadX)
+//   useEffect(() => {
+//     console.log('In 2nd useEffect',reloadX)
 
-        const userCollection = collection(db, 'user');
+//         const userCollection = collection(db, 'user');
 
-        const unsubscribe1 = onSnapshot(userCollection, async (snapshot) => {
-            const q = query(collection(db, "reload"), where("reload", "==", false));
-            const docs = await getDocs(q);
+//         const unsubscribe1 = onSnapshot(userCollection, async (snapshot) => {
+//             const q = query(collection(db, "reload"), where("reload", "==", false));
+//             const docs = await getDocs(q);
        
-            docs.forEach((doc) => {
-              console.log('1!!',doc.data().reload);
-              setReload(doc.data().reload)
-              setFlag2(!doc.data().reload)
-            //   if(doc.data().reload == false){
-            //     setFlag2(true)
-            //   }
+//             docs.forEach((doc) => {
+//               console.log('1!!',doc.data().reload);
+//               setReload(doc.data().reload)
+//               setFlag2(!doc.data().reload)
+//             //   if(doc.data().reload == false){
+//             //     setFlag2(true)
+//             //   }
 
-            })
-            console.log('BEFORE IF',flag2)
-            if (flag2){
-                console.log('INN',flag2)
-                setFlag2(false)
+//             })
+//             console.log('BEFORE IF',flag2)
+//             if (flag2){
+//                 console.log('INN',flag2)
+//                 setFlag2(false)
                 
-                const userData = snapshot.docs.map((doc) => doc.data());
-                for (const x of userData) {
-                    if (x.signedin === true) {
-                    const userRef = doc(collection(db, 'user'), x.name);
-                    await setDoc(
-                        userRef,
-                        { signedin: false },
-                        { merge: true }
-                    )
-                    }
-                }
-                console.log('All False');
-        }
-        });
-        return () => {
-            unsubscribe1();
-          };
+//                 const userData = snapshot.docs.map((doc) => doc.data());
+//                 for (const x of userData) {
+//                     if (x.signedin === true) {
+//                     const userRef = doc(collection(db, 'user'), x.name);
+//                     await setDoc(
+//                         userRef,
+//                         { signedin: false },
+//                         { merge: true }
+//                     )
+//                     }
+//                 }
+//                 console.log('All False');
+//         }
+//         });
+//         return () => {
+//             unsubscribe1();
+//           };
     
 
-}, []);
+// }, []);
 const handleRegister = () => {
         setFlag(true)
      
@@ -89,7 +101,7 @@ const handleRegister = () => {
                     userRef,
                     {  name: username,signedin:false} ,
                     { merge: true }
-                );
+                )
                 console.log('Registered')
             setEmail()
             setPassword()
@@ -117,9 +129,10 @@ const handleRegister = () => {
             {  name: username,signedin:true} ,
             { merge: true }
     )
+
     await setDoc(
         reloadRef,
-        {  reload: true} ,
+        {  reload: true,user:username} ,
         { merge: true }
     )
     
@@ -128,7 +141,11 @@ const handleRegister = () => {
     setPassword('')
     setConfirmPass('')
     setSignedIn(true)
-    navigation.navigate('DrawerStack')
+
+    navigation.reset({
+        index: 0,
+        routes: [{ name: 'DrawerStack' }],
+      });
     })
     .catch((error) => {console.log(error.message);
     setSignedIn(false)})
@@ -222,12 +239,10 @@ const styles = StyleSheet.create({
 
     },
     buttonContainer: {
-
         width: wp(60),
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: wp(10)
-
     },
     buttonOutLine: {
         width: wp(60),
