@@ -32,6 +32,8 @@ const MenuDetails = ({route,navigation}) => {
             setUser(x.name);
           }
         })
+
+        console.log(user)
       })
     }, [])
 

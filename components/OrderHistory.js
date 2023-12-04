@@ -1,14 +1,36 @@
-import { StyleSheet, Text, View,FlatList } from 'react-native'
-import {AntDesign,MaterialCommunityIcons,FontAwesome,Ionicons} from 'react-native-vector-icons'
+import { StyleSheet, Text, View,FlatList,TouchableOpacity } from 'react-native'
+import {AntDesign,MaterialCommunityIcons,FontAwesome,Ionicons,SimpleLineIcons} from 'react-native-vector-icons'
 
 import React,{useEffect, useState} from 'react'
 import {doc, setDoc,getDocs, collection,deleteDoc, addDoc,docRef,onSnapshot,getDoc,query,where} from "firebase/firestore";
 import { db,auth,storage } from './Config'
-const OrderHistory = () => {
+const OrderHistory = (navigation) => {
   const [user,setUser] = useState(null)
   const [cartHistoryFetched, setCartHistoryFetched] = useState([]);
 
   const [initialRender, setInitialRender] = useState(true);
+
+  const logout =  async () => {
+    
+    const userCollection = collection(db, "user");
+    const unsubscribe1 = onSnapshot(userCollection, async (snapshot) => {
+      const userData = snapshot.docs.map((doc) => doc.data());
+  
+      for (const x of userData) {
+        const userRef = doc(collection(db, 'user'), `${x.name}`);
+        await setDoc(
+          userRef,
+          { name: x.name, signedin: false },
+          { merge: true }
+        )
+      }
+      await auth.signOut();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'LoginScreen' }],
+      });
+    }) 
+  }
   useEffect(() => {
     const userCollection = collection(db, 'user')
 
@@ -24,6 +46,7 @@ const OrderHistory = () => {
           setUser(x.name)
         }
       })
+
     })
 
       // cart history fetch
@@ -87,12 +110,11 @@ const OrderHistory = () => {
   return (
     <View>
 
-      {/* {keysArray.map((x,i)=>{
-        return <View>
-          <Text>Order {i + 1}</Text>
-
-        </View>
-      })} */}
+      <TouchableOpacity onPress={()=>logout()}>
+        
+        <SimpleLineIcons name="logout" color={"black"} size={25} />
+      
+        </TouchableOpacity>
 
       {(keysArray.length ==0)?
       <View style={styles.centeredRowContainer}>

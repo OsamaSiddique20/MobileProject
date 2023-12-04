@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   FlatList,
   SafeAreaView,
+  NativeModules
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Card, Button } from "@rneui/themed";
@@ -41,11 +42,11 @@ const HomeScreen = ({ route, navigation }) => {
   const [filteredData, setFilteredData] = useState([]);
   const category = ["All", "Free Delivery", "Top Selling"];
   const logout =  async () => {
-    console.log(112121)
-    const userCollection = collection(db, "user");
+    console.log('In Logout')
+    const userCollection = collection(db, "user")
   
     const unsubscribe1 = onSnapshot(userCollection, async (snapshot) => {
-      const userData = snapshot.docs.map((doc) => doc.data());
+      const userData = snapshot.docs.map((doc) => doc.data())
   
       for (const x of userData) {
         const userRef = doc(collection(db, 'user'), `${x.name}`);
@@ -57,10 +58,8 @@ const HomeScreen = ({ route, navigation }) => {
       }
 
       await auth.signOut();
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'LoginScreen' }],
-      });
+      NativeModules.DevSettings.reload();
+
     }) 
   }
 
@@ -122,6 +121,7 @@ const HomeScreen = ({ route, navigation }) => {
         if (x.signedin == true) {
           setUser(x.name);
         }
+
 
         const reloadRef = doc(collection(db, "reload"), `reload`);
         setDoc(reloadRef, { reload: false }, { merge: true });

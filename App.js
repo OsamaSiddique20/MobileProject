@@ -139,25 +139,21 @@ const DrawerStack = () => (
     <Drawer.Screen name="LoginScreen" component={LoginScreen} options={{headerShown:false}}/>
   </Drawer.Navigator>
 );
-const StackNav = () => (
-  <SafeAreaView style={styles.container}>
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName="LoginScreen"
-          screenOptions={{ headerShown: false }}
-        >
-          <Stack.Screen name="LoginScreen" component={LoginScreen} />
-          <Stack.Screen name="DrawerStack" component={DrawerStack} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </SafeAreaView>
-)
+
 
 export default function App() {
   return (
     <SafeAreaView style={styles.container}>
-      <StackNav/>
-    </SafeAreaView>
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName="LoginScreen"
+        screenOptions={{ headerShown: false }}
+      >
+        <Stack.Screen name="LoginScreen" component={LoginScreen} />
+        <Stack.Screen name="DrawerStack" component={DrawerStack} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  </SafeAreaView>
   );
 }
 

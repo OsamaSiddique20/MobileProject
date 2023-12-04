@@ -1,4 +1,4 @@
-import { StyleSheet, TextInput, View,TouchableOpacity,Text,KeyboardAvoidingView } from 'react-native'
+import { StyleSheet, TextInput, View,TouchableOpacity,Text,KeyboardAvoidingView ,Image} from 'react-native'
 import React,{useEffect, useState} from 'react';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import {doc, setDoc,getDocs, collection,deleteDoc, addDoc,docRef,onSnapshot,getDoc,query,where} from "firebase/firestore";
@@ -142,10 +142,7 @@ const handleRegister = () => {
     setConfirmPass('')
     setSignedIn(true)
 
-    navigation.reset({
-        index: 0,
-        routes: [{ name: 'DrawerStack' }],
-      });
+    navigation.navigate('DrawerStack')
     })
     .catch((error) => {console.log(error.message);
     setSignedIn(false)})
@@ -155,6 +152,10 @@ const handleRegister = () => {
   return (
 
     <KeyboardAvoidingView style={styles.container}>
+
+        <View>
+        <Image source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/test-3df00.appspot.com/o/LoginScreen.jpeg?alt=media&token=bb857a83-6cef-4504-b528-7eeab0002a68'}} style={styles.image} />
+        </View>
             <View style={styles.inputContainer}>
                 <Text>{error}</Text>
                 <TextInput
@@ -233,7 +234,7 @@ const styles = StyleSheet.create({
     button: {
         width: wp(60),
         alignItems: 'center',
-        backgroundColor: '#0782F9',
+        backgroundColor: '#e28343',
         borderRadius: wp(2.5),
         padding: wp(4.5),
 
@@ -251,7 +252,7 @@ const styles = StyleSheet.create({
         borderRadius: wp(2.5),
         padding: wp(4.5),
         marginTop: wp(2),
-        borderColor: '#0782F9',
+        borderColor: '#e28343',
         borderWidth: wp(0.5)
     },
     buttonText: {
@@ -261,8 +262,15 @@ const styles = StyleSheet.create({
     },
     buttonOutLineText: {
         fontWeight: '700',
-        color: '#0782F9',
+        color: '#e28343',
         fontSize: wp(4.5)
-    }
+    },
 
+    // image style
+    image: {
+        width: wp(60),
+        height: wp(60),
+        marginBottom:wp(5),
+        borderRadius: wp(10),
+      },
 })
