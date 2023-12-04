@@ -1,7 +1,9 @@
 import { StyleSheet, Text, View,Animated  } from 'react-native'
 import React,{useEffect, useState,useRef} from 'react'
 import {AntDesign,MaterialCommunityIcons,FontAwesome,Ionicons,MaterialIcons,Fontisto} from 'react-native-vector-icons'
-import AnimatedLoader from 'react-native-animated-loader';
+
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+
 const Delivery = () => {
 
     const anim = useRef(new Animated.Value(1));
@@ -12,12 +14,12 @@ const Delivery = () => {
             Animated.timing(anim.current, {
               toValue: 1.2,
               duration: 200,
-              useNativeDriver: true, // Set useNativeDriver to true for the first animation
+              useNativeDriver: true, 
             }),
             Animated.timing(anim.current, {
               toValue: 1,
               duration: 200,
-              useNativeDriver: true, // Set useNativeDriver to true for the second animation
+              useNativeDriver: true, 
             }),
           ])
         ).start();
@@ -29,14 +31,14 @@ const Delivery = () => {
             <Text style={styles.text}>Your order is being prepared</Text>
         </View>
         <View>
-            <Animated.View style={{ transform: [{ scale: anim.current }],marginTop:40 }}>
-            <MaterialCommunityIcons name="chef-hat" size={30} color={"#e28743"} />
+            <Animated.View style={{ transform: [{ scale: anim.current }],marginTop:wp(20) }}>
+            <MaterialCommunityIcons name="chef-hat" size={wp(10)} color={"#e28743"} />
             </Animated.View>
         </View>
         <View style={styles.container2}>
   
                 <View style={styles.leftColumn}>
-                    <MaterialIcons name="delivery-dining" size={50} color={"#e28743"} />
+                    <MaterialIcons name="delivery-dining" size={wp(12)} color={"#e28743"} />
                 </View>
 
                 <View style={styles.rightColumn}>
@@ -51,7 +53,7 @@ const Delivery = () => {
         <View style={styles.container3}>
 
             <View style={styles.leftColumn}>
-                <Fontisto name="person" size={40} color={"#e28743"}/>
+                <Fontisto name="person" size={wp(10)} color={"#e28743"}/>
             </View>
 
             <View style={styles.middleColumn}>
@@ -61,7 +63,7 @@ const Delivery = () => {
 
        
             <View style={styles.rightColumn}>
-                <FontAwesome name="phone" size={40} color={"#e28743"} />
+                <FontAwesome name="phone" size={wp(10)} color={"#e28743"} />
             </View>
         </View>
     </View>
@@ -74,24 +76,23 @@ const styles = StyleSheet.create({
     container: {
         justifyContent: 'center',
         alignItems: 'center',
-       
-        padding: 8,
+        padding: wp(5),
       },
       text:{
-        marginTop:70,
-        fontSize: 20,
+        marginTop:wp(20),
+        fontSize: wp(6.5),
         fontWeight: 'bold',
       },
       // deliver 
       container2: {
         flexDirection: 'row', 
-        justifyContent: 'center', // Center content horizontally
+        justifyContent: 'center', 
         alignItems: 'center', 
-        padding: 16,
+        padding: wp(4),
         backgroundColor: '#fffce6',
-        width:'95%',
-        marginTop:100,
-        borderRadius:15
+        width:wp(86),
+        marginTop:wp(25),
+        borderRadius:wp(4)
       },
       leftColumn: {
         marginRight: 16,
@@ -109,32 +110,31 @@ const styles = StyleSheet.create({
       // last element 
       container3: {
         flexDirection: 'row', 
-        justifyContent: 'center', // Center content horizontally
+        justifyContent: 'center', 
         alignItems: 'center', 
-        padding: 16,
-        backgroundColor: '#f7f4dc',
-        width:'95%',
-        marginTop:100,
-        marginBottom:100,
-        borderRadius:15
+        padding: wp(4),
+        backgroundColor: '#fffce6',
+        width:wp(86),
+        marginTop:wp(25),
+        borderRadius:wp(4)
       },
       leftColumn: {
-        marginRight: 16,
+        marginRight: wp(6),
       },
       middleColumn: {
         flex: 1,
-        marginLeft:30
+        marginLeft:wp(5)
       },
       rightColumn: {
-        marginLeft: 16,
+        marginLeft: wp(5),
       },
       heading: {
-        fontSize: 18,
+        fontSize: wp(4),
         fontWeight: 'bold',
-        marginBottom: 8,
+        marginBottom: wp(4),
       },
       subHeading: {
-        fontSize: 16,
+        fontSize: wp(4),
         color: '#333',
       },
 })

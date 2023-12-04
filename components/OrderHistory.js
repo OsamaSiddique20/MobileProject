@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View,FlatList,TouchableOpacity } from 'react-native'
-import {AntDesign,MaterialCommunityIcons,FontAwesome,Ionicons,SimpleLineIcons} from 'react-native-vector-icons'
+import {AntDesign,MaterialCommunityIcons,FontAwesome,Ionicons,SimpleLineIcons,MaterialIcons} from 'react-native-vector-icons'
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 import React,{useEffect, useState} from 'react'
 import {doc, setDoc,getDocs, collection,deleteDoc, addDoc,docRef,onSnapshot,getDoc,query,where} from "firebase/firestore";
@@ -10,27 +11,6 @@ const OrderHistory = (navigation) => {
 
   const [initialRender, setInitialRender] = useState(true);
 
-  const logout =  async () => {
-    
-    const userCollection = collection(db, "user");
-    const unsubscribe1 = onSnapshot(userCollection, async (snapshot) => {
-      const userData = snapshot.docs.map((doc) => doc.data());
-  
-      for (const x of userData) {
-        const userRef = doc(collection(db, 'user'), `${x.name}`);
-        await setDoc(
-          userRef,
-          { name: x.name, signedin: false },
-          { merge: true }
-        )
-      }
-      await auth.signOut();
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'LoginScreen' }],
-      });
-    }) 
-  }
   useEffect(() => {
     const userCollection = collection(db, 'user')
 
@@ -95,31 +75,25 @@ const OrderHistory = (navigation) => {
         {keysArray[index].map(restaurant => (
           <View key={restaurant} style={styles.restaurantContainer}>
             <Text style={styles.restaurantHeading}>{restaurant}</Text>
-           
+
             {cartHistoryFetched[index][restaurant].map((item, i) => (
               <Text key={i}>{`${item.name} - ${item.price * item.quantity} QR`}</Text>
             ))}
           </View>
         ))}
+
         <Text style={styles.orderTotal}>Total : {totalOrderSums[index]} QR</Text>
       </View>
-    );
-  };
+    )
+  }
 
 
   return (
     <View>
-
-      <TouchableOpacity onPress={()=>logout()}>
-        
-        <SimpleLineIcons name="logout" color={"black"} size={25} />
-      
-        </TouchableOpacity>
-
       {(keysArray.length ==0)?
       <View style={styles.centeredRowContainer}>
         <Text style={styles.emptyCartMessage}>Your Order history is empty</Text>
-        <Ionicons name="sad-outline" size={30} color={"#e28743"} />
+        <Ionicons name="sad-outline" size={wp(9)} color={"#e28743"} />
       </View>
       :<FlatList
       data={cartHistoryFetched}
@@ -128,30 +102,6 @@ const OrderHistory = (navigation) => {
     />}
 
 
-
-    {/* {cartHistoryFetched.map((restaurant, index) => (
-      <View key={index} >
-        <Text>Order {index + 1 }</Text>
-        <Text style={styles.restaurantName}>{Object.keys(restaurant)[0]}</Text>
- 
-        {restaurant[Object.keys(restaurant)[0]].map((item, itemIndex) => (
-
-         <View key={`${index}-${itemIndex}`} >
-          
-       
-
-          <View style={styles.infoContainer}>
-            
-            <View><Text >{`${item.name}`}</Text></View>
-            <View><Text >{`${item.price * item.quantity} QR`}</Text></View>
-          </View>
-          </View> 
-                ))}
-              </View>
-            ))} */}
-
-      
-
     </View>
   )
 }
@@ -159,48 +109,13 @@ const OrderHistory = (navigation) => {
 export default OrderHistory
 
 const styles = StyleSheet.create({
-  // orderContainer: {
-  //   width: '90%',
-  //   marginTop: 15,
-  //   marginBottom: 10,
-  //   padding: 10,
-  //   borderRadius: 30,
-  //   backgroundColor: '#fff3e0',
-    
-  //   shadowColor: '#000',
-  //   shadowOffset: { width: 0, height: 2 },
-  //   shadowOpacity: 0.2,
-  //   shadowRadius: 4,
-  //   alignSelf: 'center', 
-  //   justifyContent: 'center',
-  // },
-  // orderHeading: {
-  //   fontSize: 18,
-  //   fontWeight: 'bold',
-  //   marginBottom: 5,
-  //   textAlign:'center'
-  // },
-  // restaurantContainer: {
-  //   marginBottom: 5,
-  // },
-  // restaurantHeading: {
-  //   fontSize: 16,
-  //   fontWeight: 'bold',
-  //   marginBottom: 5,
-  // },
-  // orderTotal: {
-  //   fontSize: 16,
-  //   fontWeight: 'bold',
-  //   marginTop: 5,
-  //   textAlign:'center'
-  // },
 
   orderContainer: {
-    width: '90%',
-    marginTop: 15,
-    marginBottom: 10,
-    padding: 15,
-    borderRadius: 20,
+    width: wp(90),
+    marginTop: wp(6),
+    marginBottom: wp(3),
+    padding: wp(3),
+    borderRadius: wp(4),
     backgroundColor: '#fff8e5', // Lightened color
   
     shadowColor: '#000',
@@ -213,43 +128,43 @@ const styles = StyleSheet.create({
   },
   
   orderHeading: {
-    fontSize: 18,
+    fontSize: wp(5),
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: wp(3),
     textAlign: 'center',
-    color: '#e28743', // Accent color
+    color: '#c96d1c', // Accent color
   },
   
   restaurantContainer: {
-    marginBottom: 10,
+    marginBottom: wp(4),
   },
   
   restaurantHeading: {
-    fontSize: 16,
+    fontSize: wp(4),
     fontWeight: 'bold',
-    marginBottom: 5,
-    color: '#e28743', // Accent color
+    marginBottom: wp(2),
+    color: '#e28743', 
   },
   
   orderTotal: {
-    fontSize: 16,
+    fontSize: wp(4),
     fontWeight: 'bold',
-    marginTop: 10,
+    marginTop: wp(3),
     textAlign: 'center',
-    color: 'red', // Accent color
+    color: 'red', 
   },
   
   // empty cart message
   centeredRowContainer: {
-    marginTop:300,
+    marginTop:wp(70),
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
   },
   emptyCartMessage: {
-    fontSize: 22,
+    fontSize: wp(6),
     fontWeight:'bold',
     color: 'black',
-    marginRight: 10, 
+    marginRight: wp(5), 
   },
 })

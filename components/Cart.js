@@ -1,16 +1,13 @@
 import { StyleSheet, Text, View ,TextInput,Image,FlatList} from 'react-native'
 import React,{useEffect, useState} from 'react'
 import { Card,Button } from '@rneui/themed';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 import {doc, setDoc,getDocs, collection,deleteDoc, addDoc,docRef,onSnapshot,getDoc,query,where} from "firebase/firestore";
 import { db,auth,storage } from './Config'
 import {AntDesign,MaterialCommunityIcons,FontAwesome,Ionicons} from 'react-native-vector-icons'
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
-import Icon from 'react-native-vector-icons/FontAwesome';
 
-
-import {ref, uploadBytesResumable, getDownloadURL, connectStorageEmulator,listAll} from 'firebase/storage'
-import * as ImagePicker from 'expo-image-picker';
 
 const Cart = ({route,navigation}) => {
 
@@ -48,7 +45,7 @@ const Cart = ({route,navigation}) => {
         const newData = snapshot.docs.map((doc) => doc.data());
         setCartFetched(newData);
         console.log('CART:', cartFetched);
-      });
+      })
 
       return () => {
         unsubscribe();
@@ -108,7 +105,7 @@ const Cart = ({route,navigation}) => {
         return sum + price * quantity;
       }, 0);
   
-      setTotalPrice(newTotalPrice);
+      setTotalPrice(newTotalPrice)
     }, [cartFetched]);
 
 
@@ -117,7 +114,6 @@ const Cart = ({route,navigation}) => {
 
         const cartHisRef = doc(collection(db, 'CartHistory'), `${user}-${id}`);
         
-
         for (const obj of groupedCart) {
           try {
               await setDoc(cartHisRef, obj,{merge:true});
@@ -126,7 +122,7 @@ const Cart = ({route,navigation}) => {
               console.error('Error adding document: ', error);
             }
         }
-
+        
         for (const obj of cartFetched){
    
           const userCartRef = doc(collection(db, 'Cart'), `${Object.keys(obj)[0]}-${user}`);
@@ -151,8 +147,8 @@ const Cart = ({route,navigation}) => {
           <Image source={{ uri: item.image }} style={styles.image} />
 
           <View style={styles.infoContainer}>
-            <View><Text style={{fontWeight:'bold'}}>{`${item.name}`}</Text></View>
-            <View><Text style={{fontWeight:'bold'}}>{`${item.price * item.quantity} QR`}</Text></View>
+            <View><Text style={{fontWeight:'bold',fontSize:wp(3.5)}}>{`${item.name}`}</Text></View>
+            <View><Text style={{fontWeight:'bold',fontSize:wp(3.5)}}>{`${item.price * item.quantity} QR`}</Text></View>
           </View>
 
             <View style={styles.counterContainer}>
@@ -168,13 +164,12 @@ const Cart = ({route,navigation}) => {
                 ))}
               </View>
             ))}
-
       </View>
 
       {totalPrice == 0?
         <View style={styles.centeredRowContainer}>
         <Text style={styles.emptyCartMessage}>Your cart is empty</Text>
-        <Ionicons name="sad-outline" size={30} color={"#e28743"} />
+        <Ionicons name="sad-outline" size={wp(10)} color={"#e28743"} />
         </View>
 
         :
@@ -183,12 +178,12 @@ const Cart = ({route,navigation}) => {
           <Text style={styles.totalPriceText}>{`Total : ${totalPrice} QR`}</Text>
         </View>
         <View style={styles.paymentToggleContainer}>
-          <TouchableOpacity onPress={()=>setColorToggle(true)} style={{ marginRight: 10 }} >
-              <FontAwesome name="credit-card" size={30} color={colorToggle?"#e28743":"black"} />
+          <TouchableOpacity onPress={()=>setColorToggle(true)} style={{ marginRight: wp(4) }} >
+              <FontAwesome name="credit-card" size={wp(7)} color={colorToggle?"#e28743":"black"} />
           </TouchableOpacity>
           
-          <TouchableOpacity onPress={()=>setColorToggle(false)} style={{ marginLeft: 10,marginRight:15 }}>
-              <Ionicons name="cash-outline" size={30} color={colorToggle?"black":"#e28743"} />
+          <TouchableOpacity onPress={()=>setColorToggle(false)} style={{ marginLeft: wp(4),marginRight:wp(3) }}>
+              <Ionicons name="cash-outline" size={wp(7)} color={colorToggle?"black":"#e28743"} />
           </TouchableOpacity>
         </View>
         <TouchableOpacity style={styles.checkoutButton} onPress={checkout}>
@@ -208,7 +203,7 @@ const styles = StyleSheet.create({
     buttonContainer: {
         flexDirection: 'row', 
         justifyContent: 'space-around', 
-        marginTop: 20,
+        marginTop: wp(5),
       },
     selectedButton: {
         backgroundColor: '#e28743', 
@@ -224,9 +219,9 @@ const styles = StyleSheet.create({
       },
       button: {
         backgroundColor: '#ffe5bf', 
-        width: 100,
-        height:50,
-        borderRadius: 10,
+        width: wp(10),
+        height:wp(10),
+        borderRadius: wp(10),
         alignItems: 'center', 
         justifyContent: 'center',
         borderColor: '#e28743',
@@ -235,7 +230,7 @@ const styles = StyleSheet.create({
       },
       SizeButtonText: {
         color: '#e28743', 
-        fontSize: 16,
+        fontSize: wp(10),
         fontWeight: 'bold',
       },
       text: {
@@ -244,65 +239,65 @@ const styles = StyleSheet.create({
       },
 
       restaurantContainer: {
-        width: '90%',
-        marginTop: 15,
-        marginBottom: 10,
-        padding: 10,
-        borderRadius: 30,
+        width: wp(90),
+        marginTop: wp(5),
+        marginBottom: wp(5),
+        padding: wp(2.5),
+        borderRadius: wp(5),
         backgroundColor: 'white',
       
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
+        shadowOffset: { width: 0, height: 5 },
         shadowOpacity: 0.2,
         shadowRadius: 4,
         alignSelf: 'center', 
         justifyContent: 'center',
       },
       restaurantName: {
-        fontSize: 18,
+        fontSize: wp(5),
         fontWeight: 'bold',
-        marginBottom: 5,
+        marginBottom: wp(3),
         textAlign:'center'
       },
       cartItemContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 10,
+        marginBottom: wp(3),
       },
       image: {
-        width: 60,
-        height: 60,
-        marginRight: 30,
-        borderRadius: 5,
+        width: wp(15),
+        height: wp(14),
+        marginRight: wp(10),
+        borderRadius: wp(2),
       },
       infoContainer: {
         flex: 1,
         justifyContent: 'center',
-        marginRight: 10,
+        marginRight: wp(3),
       },
       counterContainer: {
-        flexDirection: 'column',
+        flexDirection: 'row',
         alignItems: 'center',
         
       },
   
       counterButton: {
-        fontSize: 20,
+        fontSize: wp(4),
         fontWeight: 'bold',
         color: '#e28743',
-    
-        width: 25,
-        height:25,
+        width: wp(6),
+        height:wp(6),
         borderRadius: 13,
         alignItems: 'center', 
         justifyContent: 'center',
         borderColor: '#e28743',
-        borderWidth: 2, 
+        borderWidth: wp(0.5), 
         textAlign: 'center', 
-        lineHeight: 21, 
+        lineHeight: wp(4.5), 
+        margin:wp(2)
       },
       counter: {
-        fontSize: 18,
+        fontSize: wp(4),
         fontWeight: 'bold',
       },
 
@@ -311,39 +306,39 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: 10,
+        padding: wp(3),
         backgroundColor: '#f0f0f0',
       },
       totalPriceContainer: {
         flex: 1,
       },
       totalPriceText: {
-        fontSize: 18,
+        fontSize: wp(5),
         fontWeight:'bold'
       },
       checkoutButton: {
         backgroundColor: '#e28743',
-        padding: 10,
+        padding: wp(3),
         borderRadius: 5,
       },
       buttonText: {
         color: 'white',
-        fontSize: 16,
+        fontSize: wp(4),
         fontWeight:'bold'
       },
 
       // empty cart message
         centeredRowContainer: {
-        marginTop:300,
+        marginTop:wp(70),
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
       },
       emptyCartMessage: {
-        fontSize: 22,
+        fontSize: wp(7),
         fontWeight:'bold',
         color: 'black',
-        marginRight: 10, 
+        marginRight: wp(8), 
       },
 
       // payment 
@@ -351,6 +346,6 @@ const styles = StyleSheet.create({
       paymentToggleContainer:{
         flexDirection:'row',
         alignItems:'space-between',
-        paddingHorizontal: 10, 
+        paddingHorizontal: wp(2), 
       }
 })

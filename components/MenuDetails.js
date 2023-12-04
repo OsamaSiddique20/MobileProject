@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View ,TextInput,Image,FlatList} from 'react-native'
 import React,{useEffect, useState} from 'react'
 import { Card,Button } from '@rneui/themed';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 import {doc, setDoc,getDocs, collection,deleteDoc, addDoc,docRef,onSnapshot,getDoc} from "firebase/firestore";
 import { db,auth,storage } from './Config'
@@ -52,40 +53,38 @@ useEffect(() => {
 }, [selectedSize, menuDetails.price]);
 
 
-
   return (
-    <View>
+    <ScrollView>
       <View><Text></Text></View>
         <View style={{justifyContent: 'center', alignItems: 'center'}}>
-
                 <Image
                 key={1}
                 source={{ uri: menuDetails.image }}
-                style={{ width: 300, height: 250 ,borderRadius: 20 }}
+                style={{ width: wp(65), height: wp(50),borderRadius:wp(3),marginBottom:wp(7),marginTop:wp(8) }}
                 />
 
         </View>
 
         <View><Text></Text></View>
      <View>
-     <Text style={{ fontWeight: 'bold', fontSize: 20, paddingLeft: 20 }}>
+     <Text style={{ fontWeight: 'bold', fontSize: wp(5), paddingLeft: wp(4.5) }}>
         {menuDetails.menu}
       </Text>
       </View>
       <View/>
       <View
         style={{
-          borderWidth: 0.5,
+          borderWidth: wp(0.1),
           borderColor:'black',
-          margin:10,
+          margin:wp(3),
      }}
       />
 
       <View>
      
-        <Text style={{ fontWeight: 'bold', fontSize: 15, paddingLeft: 20 }}>Description</Text>
+        <Text style={{ fontWeight: 'bold', fontSize: wp(3.5), paddingLeft: wp(4.5) }}>Description</Text>
         <Text></Text>
-        <Text style={{ fontSize: 15, paddingLeft: 20,paddingRight:20 }}>
+        <Text style={{ fontSize: wp(3.5), paddingLeft: 20,paddingRight:wp(4.5) }}>
           {menuDetails.desc}
         </Text>
       </View>
@@ -125,7 +124,7 @@ useEffect(() => {
         </TouchableOpacity>
       </View>
     </View>
-    </View>
+    </ScrollView>
   )
 }
 
@@ -133,60 +132,54 @@ export default MenuDetails
 
 const styles = StyleSheet.create({
   line: {
-    borderBottomWidth: 1, // Adjust the thickness of the line
-    borderBottomColor: 'black', // Adjust the color of the line
-    marginVertical: 10, // Adjust the spacing above and below the line
+    borderBottomWidth: 1, 
+    borderBottomColor: 'black', 
+    marginVertical: wp(5), 
   },
     buttonContainer: {
         flexDirection: 'row', 
         justifyContent: 'space-around', 
-        marginTop: 20,
+        marginTop: wp(10),
+        marginBottom:wp(5)
       },
       button: {
         backgroundColor: '#ffe5bf', 
-        width: 60,
-        height:50,
-        borderRadius: 5,
+        width: wp(16),
+        height:wp(12),
+        borderRadius: wp(1.5),
         alignItems: 'center', 
         justifyContent: 'center',
         borderColor: '#e28743',
-        borderWidth: 2, 
+        borderWidth: wp(0.5), 
         
       },
       SizeButtonText: {
         color: '#e28743', 
-        fontSize: 16,
+        fontSize: wp(4.5),
         fontWeight: 'bold',
       },
 
       priceContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        paddingHorizontal: 20,
-        marginTop: 20,
+        paddingHorizontal: wp(5),
+        marginTop: wp(5),
       },
-    //   leftContainer: {
-    //     flex: 1,
-    //     marginRight: 10,
-    //   },
-    //   rightContainer: {
-    //     flex: 1,
-    //     marginLeft: 10,
-    //   },
+
       heading: {
-        fontSize: 16,
+        fontSize: wp(4),
         color: '#a9a9a9',
       },
       price: {
-        fontSize: 18,
+        fontSize: wp(4.5),
         color: '#e28743',
         fontWeight: 'bold',
       },
       buyButton: {
         backgroundColor: '#e28743',
-        paddingVertical: 10,
-        paddingHorizontal: 15,
-        borderRadius: 5,
+        paddingVertical: wp(3),
+        paddingHorizontal: wp(3),
+        borderRadius: wp(1),
         alignItems: 'center',
       },
       buttonText: {

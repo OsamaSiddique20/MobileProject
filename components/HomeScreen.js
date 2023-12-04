@@ -11,6 +11,7 @@ import {
   NativeModules
 } from "react-native";
 import React, { useEffect, useState } from "react";
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { Card, Button } from "@rneui/themed";
 import {
   doc,
@@ -22,7 +23,7 @@ import {
   docRef,
   onSnapshot,
   getDoc,
-} from "firebase/firestore";
+} from "firebase/firestore"
 import { db, auth, storage } from "./Config";
 import {
   ref,
@@ -31,7 +32,7 @@ import {
   connectStorageEmulator,
   listAll,
 } from "firebase/storage";
-import { FontAwesome ,SimpleLineIcons} from "react-native-vector-icons";
+import { FontAwesome ,SimpleLineIcons,MaterialCommunityIcons} from "react-native-vector-icons";
 
 const HomeScreen = ({ route, navigation }) => {
   const [user, setUser] = useState(null);
@@ -87,18 +88,11 @@ const HomeScreen = ({ route, navigation }) => {
   // Limit to 2 rows
   const limitedData = chunkArray(filteredData, 2);
   useEffect(() => {
-    // navigation.setOptions(
-    //     {headerBackTitleVisible: false,s
-    //         headerLeft: () => <AntDesign name='logout'
-    //             size={20} onPress={() => navigation.replace("Login")}
-    //             />
-    //     })
 
-    const collectionRef = collection(db, "project");
+    const collectionRef = collection(db, "project")
 
     const unsubscribe = onSnapshot(collectionRef, (snapshot) => {
       const newData = snapshot.docs.map((doc) => doc.data());
-      // console.log('From DB\t', newData);
       setFetchedData(newData);
 
     });
@@ -106,7 +100,7 @@ const HomeScreen = ({ route, navigation }) => {
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [])
   useEffect(() => {
     const userCollection = collection(db, "user")
 
@@ -121,8 +115,6 @@ const HomeScreen = ({ route, navigation }) => {
         if (x.signedin == true) {
           setUser(x.name);
         }
-
-
         const reloadRef = doc(collection(db, "reload"), `reload`);
         setDoc(reloadRef, { reload: false }, { merge: true });
 
@@ -135,22 +127,18 @@ const HomeScreen = ({ route, navigation }) => {
         style={{
           flexDirection: "row",
           justifyContent: "space-around",
-          marginTop: 15,
-          marginBottom: 15,
+          marginTop: wp(4),
+          marginBottom: wp(1),
         }}
       >
         <View>
           <Text style={styles.welcomeText}>Welcome {user} 👋</Text>
         </View>
-        <TouchableOpacity onPress={()=>logout()}>
-        
-        <SimpleLineIcons name="logout" color={"black"} size={25} />
-      
-        </TouchableOpacity>
+
       </View>
 
       <View style={styles.inputContainer}>
-        <FontAwesome name="search" color={"#e28743"} size={15} />
+        <FontAwesome name="search" color={"#e28743"} size={wp(5)} />
         <TextInput
           style={styles.input}
           placeholder="Search Restaurants"
@@ -171,7 +159,8 @@ const HomeScreen = ({ route, navigation }) => {
             <View key={index}>
               <Card
                 containerStyle={{
-                  borderRadius: 10,
+                  borderRadius: wp(2.5),
+                  marginLeft:wp(5),
                   overflow: "hidden",
                   backgroundColor: data != cat ? "#ffe5bf" : "#e28743",
                 }}
@@ -202,16 +191,17 @@ const HomeScreen = ({ route, navigation }) => {
               style={{
                 flexDirection: "row",
                 justifyContent: "space-between",
-                marginBottom: 10,
+                marginBottom: wp(3),
+                marginTop: wp(3)
               }}
             >
               {row.map((data, colIndex) => (
                 <Card
                   key={colIndex}
                   containerStyle={{
-                    borderRadius: 10,
+                    borderRadius: wp(3),
                     overflow: "hidden",
-                    width: "40%",
+                    width: wp(40),
                   }}
                 >
                   <TouchableOpacity
@@ -226,7 +216,7 @@ const HomeScreen = ({ route, navigation }) => {
                     <Image
                       key={rowIndex + colIndex}
                       source={{ uri: data.image }}
-                      style={{ width: 120, height: 100 }}
+                      style={{ width: wp(33), height: wp(25) }}
                     />
                   </TouchableOpacity>
 
@@ -239,11 +229,11 @@ const HomeScreen = ({ route, navigation }) => {
                       })
                     }
                   >
-                    <View style={{ padding: 10 }} key={data.name}>
+                    <View style={{ padding: wp(1.5) }} key={data.name}>
                       <Text
                         key={data.name}
                         style={{
-                          fontSize: 18,
+                          fontSize: wp(4.2),
                           fontWeight: "bold",
                           textAlign: "center",
                         }}
@@ -271,21 +261,21 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     flexDirection: "row",
-
-    width: "70%",
-    margin: 10,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    width: wp(55),
+    margin: wp(3),
+    marginLeft:wp(5),
+    paddingHorizontal: wp(2.5),
+    paddingVertical: wp(2.5),
     borderBottomColor: "lightgray",
-    borderBottomWidth: 1,
+    borderBottomWidth: wp(0.2),
   },
   input: {
-    fontSize: 16,
+    fontSize: wp(3.5),
     color: "#333",
-    marginLeft: 40,
+    marginLeft: wp(8),
   },
   welcomeText: {
-    fontSize: 20,
+    fontSize: wp(5),
     fontWeight: "bold",
     color: "#333", // Set the text color as needed
   

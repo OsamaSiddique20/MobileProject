@@ -17,102 +17,29 @@ const [error,setError] = useState()
 const [confirmPass,setConfirmPass] = useState()
 const [reloadX, setReload] = useState()
 
-// useEffect(() => {
-//     // Reset the navigation stack to HomeScreen
-//     const resetNavigationStack = () => {
-//       navigation.reset({
-//         index: 0,
-//         routes: [{ name: 'LoginScreen' }],
-//       });
-//     };
-//       resetNavigationStack();
-
-//   }, [navigation]);
-// useEffect(() => {
-//     const reload = async () => {
-//       try {
-//         const q = query(collection(db, "reload"), where("reload", "==", false));
-//         const docs = await getDocs(q);
-  
-//         docs.forEach((doc) => {
-//           console.log(doc.data());
-//           setReload(doc.data().reload);
-//         });
-//         console.log('XXXXXX', reloadX);
-//       } catch (error) {
-//         console.error("Error in reload:", error);
-//       }
-//     };
-  
-//     reload();
-//   }, []);
-
-//   useEffect(() => {
-//     console.log('In 2nd useEffect',reloadX)
-
-//         const userCollection = collection(db, 'user');
-
-//         const unsubscribe1 = onSnapshot(userCollection, async (snapshot) => {
-//             const q = query(collection(db, "reload"), where("reload", "==", false));
-//             const docs = await getDocs(q);
-       
-//             docs.forEach((doc) => {
-//               console.log('1!!',doc.data().reload);
-//               setReload(doc.data().reload)
-//               setFlag2(!doc.data().reload)
-//             //   if(doc.data().reload == false){
-//             //     setFlag2(true)
-//             //   }
-
-//             })
-//             console.log('BEFORE IF',flag2)
-//             if (flag2){
-//                 console.log('INN',flag2)
-//                 setFlag2(false)
-                
-//                 const userData = snapshot.docs.map((doc) => doc.data());
-//                 for (const x of userData) {
-//                     if (x.signedin === true) {
-//                     const userRef = doc(collection(db, 'user'), x.name);
-//                     await setDoc(
-//                         userRef,
-//                         { signedin: false },
-//                         { merge: true }
-//                     )
-//                     }
-//                 }
-//                 console.log('All False');
-//         }
-//         });
-//         return () => {
-//             unsubscribe1();
-//           };
-    
-
-// }, []);
 const handleRegister = () => {
         setFlag(true)
-     
+
         if (password == confirmPass){
             createUserWithEmailAndPassword(auth, email, password)
             .then(async () => {
                 const userRef = doc(collection(db, 'user'), `${username}`);
                 await setDoc(
                     userRef,
-                    {  name: username,signedin:false} ,
+                    {  name: username,signedin:false,email:email} ,
                     { merge: true }
                 )
                 console.log('Registered')
-            setEmail()
-            setPassword()
-            setEmail('')
-            setPassword('')
-            setConfirmPass('')
-            setFlag(false)
-            })
+                setEmail()
+                setPassword()
+                setEmail('')
+                setPassword('')
+                setConfirmPass('')
+                setFlag(false)
+                })
              .catch((error) => console.log(error.message))
         }else{
-            alert("Passowrd mismatch")
+            alert("Invalid Credentials")
         }
   }
 
@@ -197,9 +124,8 @@ const handleRegister = () => {
             <View style={styles.buttonContainer}>
                 <TouchableOpacity style={styles.button}
                     onPress={handleLogin}
-                    
                 >
-                    <Text style={styles.buttonText}>Login</Text>
+                <Text style={styles.buttonText}>Login</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.button, styles.buttonOutLine]}
                     onPress={handleRegister}

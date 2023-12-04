@@ -6,6 +6,8 @@ import { db,auth,storage } from './Config'
 import {AntDesign,MaterialCommunityIcons} from 'react-native-vector-icons'
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+
 import {ref, uploadBytesResumable, getDownloadURL, connectStorageEmulator,listAll} from 'firebase/storage'
 import * as ImagePicker from 'expo-image-picker';
 const MenuScreen = ({route,navigation}) => {
@@ -73,23 +75,23 @@ const chunkArray = (array, size) => {
 <ScrollView>
 
 {limitedData.map((row, rowIndex) => (
-        <View key={rowIndex} style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
+        <View key={rowIndex} style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: wp(2) }}>
           {row.map((data, colIndex) => (
             
-            <Card key={colIndex} containerStyle={{ borderRadius: 10, overflow: 'hidden', width: '40%' }}>
+            <Card key={colIndex} containerStyle={{ borderRadius: 10, overflow: 'hidden', width: wp(40),height:wp(44) }}>
 
                   <TouchableOpacity  onPress={()=> navigation.navigate("MenuDetails",{name:resName,menuDetails:data,freeDelivery:freeDelivery})}>
                   <Image
                     key={colIndex}
                     source={{ uri: data.image }}
-                    style={{ width: 120, height: 100 }}
+                    style={{ width: wp(33), height: wp(25),borderRadius:wp(1) }}
                   />
                   </TouchableOpacity>
    
               
               <TouchableOpacity  onPress={()=> navigation.navigate("MenuDetails",{name:resName,menuDetails:data,freeDelivery:freeDelivery})}>
-                <View style={{ padding: 10 }}>
-                  <Text style={{ fontSize: 18, fontWeight: 'bold', textAlign: 'center' }}>
+                <View style={{ padding: wp(2) }}>
+                  <Text style={{ fontSize: wp(4), fontWeight: 'bold', textAlign: 'center' }}>
                     {data.menu}
                   </Text>
                 </View>
