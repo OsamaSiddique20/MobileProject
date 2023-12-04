@@ -28,53 +28,94 @@ const handleRegister = () => {
                     userRef,
                     {  name: username,signedin:false,email:email} ,
                     { merge: true }
-                )
+                        )
                 console.log('Registered')
+                alert("User Registered")
                 setEmail()
                 setPassword()
                 setEmail('')
                 setPassword('')
                 setConfirmPass('')
+                setUsername('')
                 setFlag(false)
                 })
-             .catch((error) => console.log(error.message))
+             .catch((error) => alert(error))
         }else{
             alert("Invalid Credentials")
         }
   }
 
-   async function handleLogin  ()  {
-    console.log('In Handle login')
-    setFlag(false)
+  async function handleLogin() {
+    console.log('In Handle login');
+    setFlag(false);
+  
+    const userCollection = collection(db, "user");
+    let proceedWithLogin = true;
+  
+    const snapshotPromise = new Promise((resolve, reject) => {
+      const unsubscribe1 = onSnapshot(userCollection, (snapshot) => {
+        resolve(snapshot);
+        unsubscribe1();
+      }, reject);
+    });
+  
+    try {
+      const snapshot = await snapshotPromise;
+      const userData = snapshot.docs.map((doc) => doc.data());
+  
+      for (const x of userData) {
+        console.log(x.email)
+        if (x.email == email){
+            setFlag2(true)
+            if (x.email != email && x.name !== username) {
+                proceedWithLogin = false;
+                break;
+              }
+        }
 
-    signInWithEmailAndPassword(auth, email, password)
-    .then(async () => {
-    const userRef = doc(collection(db, 'user'), `${username}`);
-    const reloadRef = doc(collection(db, 'reload'), 'reload')
-    await setDoc(
-            userRef,
-            {  name: username,signedin:true} ,
-            { merge: true }
-    )
-
-    await setDoc(
+      }
+    //   if (flag2 == false){
+    //         proceedWithLogin = false; 
+    //   }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      return;
+    }
+  
+    if (!proceedWithLogin) {
+      console.log('Dont go further')
+      alert('Invalid Credentials')
+      return;
+    }
+  
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+  
+      const userRef = doc(collection(db, 'user'), `${username}`);
+      const reloadRef = doc(collection(db, 'reload'), 'reload');
+  
+      await setDoc(userRef, { name: username, signedin: true }, { merge: true });
+  
+      await setDoc(
         reloadRef,
-        {  reload: true,user:username} ,
+        { reload: true, user: username },
         { merge: true }
-    )
-    
-    console.log('Logged in')
-    setEmail('')
-    setPassword('')
-    setConfirmPass('')
-    setSignedIn(true)
-
-    navigation.navigate('DrawerStack')
-    })
-    .catch((error) => {console.log(error.message);
-    setSignedIn(false)})
-    
-}
+      );
+  
+      console.log('Logged in');
+      setEmail('');
+      setPassword('');
+      setConfirmPass('');
+      setUsername('')
+      setSignedIn(true);
+  
+      navigation.navigate('DrawerStack');
+    } catch (error) {
+        alert(error)
+      setSignedIn(false);
+    }
+  }
+  
     
   return (
 
@@ -122,15 +163,15 @@ const handleRegister = () => {
             </View>
 
             <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.button}
+                <TouchableOpacity style={[styles.button,flag?{backgroundColor:'white',borderColor: '#e28343',borderWidth: wp(0.5)}:null]}
                     onPress={handleLogin}
                 >
-                <Text style={styles.buttonText}>Login</Text>
+                <Text style={[styles.buttonText,flag?{color:'#e28343'}:null]}>Login</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.button, styles.buttonOutLine]}
+                <TouchableOpacity style={[styles.button, styles.buttonOutLine,flag?styles.button:null]}
                     onPress={handleRegister}
                 >
-                    <Text style={[styles.buttonText, styles.buttonOutLineText]}>Register</Text>
+                    <Text style={[styles.buttonText, styles.buttonOutLineText,flag?{color:'white'}:null]}>Register</Text>
                 </TouchableOpacity>
             </View>
         </KeyboardAvoidingView>
@@ -163,7 +204,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#e28343',
         borderRadius: wp(2.5),
         padding: wp(4.5),
-
     },
     buttonContainer: {
         width: wp(60),
