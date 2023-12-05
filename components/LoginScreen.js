@@ -18,8 +18,12 @@ const [confirmPass,setConfirmPass] = useState()
 const [reloadX, setReload] = useState()
 
 const handleRegister = () => {
-        setFlag(true)
-
+        if (flag == false){
+            setFlag(true)
+            return
+        }
+        
+        
         if (password == confirmPass){
             createUserWithEmailAndPassword(auth, email, password)
             .then(async () => {
@@ -47,6 +51,10 @@ const handleRegister = () => {
 
   async function handleLogin() {
     console.log('In Handle login');
+    if (flag == true){
+        setFlag(false)
+        return
+    }
     setFlag(false);
   
     const userCollection = collection(db, "user");
