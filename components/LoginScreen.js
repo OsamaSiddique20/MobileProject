@@ -122,7 +122,7 @@ const handleRegister = () => {
     <KeyboardAvoidingView style={styles.container}>
 
         <View>
-        <Image source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/test-3df00.appspot.com/o/LoginScreen.jpeg?alt=media&token=bb857a83-6cef-4504-b528-7eeab0002a68'}} style={styles.image} />
+        <Image source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/test-3df00.appspot.com/o/LoginScreen.jpeg?alt=media&token=88c5a129-7d9e-4c06-9c2b-76542ae0d51f'}} style={styles.image} />
         </View>
             <View style={styles.inputContainer}>
                 <Text>{error}</Text>
